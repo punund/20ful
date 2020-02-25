@@ -1,0 +1,136 @@
+@media screen and (min-width: 1024px) { .container { max-width: 960px;  }}
+@media screen and (max-width: 1215px) { .container.is-widescreen { max-width:1152px; }}
+@media screen and (max-width: 1407px) { .container.is-fullhd { max-width:1344px;  }}
+@media screen and (min-width: 1216px) { .container { max-width: 1152px;  }}
+@media screen and (min-width: 1408px) { .container { max-width: 1344px; }} 
+
+.container
+    margin 0 auto
+    position relative
+    width auto
+/* .section {
+   padding: 3rem 0rem;
+} */
+.column {
+   padding: 0.75rem;
+}
+.columns
+   padding-top: 2rem
+   display: grid
+   grid-template-columns: 33% auto
+
+html{
+   background-color: #fffeee;
+}
+body {
+  font-family: Roboto, sans-serif;
+  font-size: 16px;
+  color: #080808;
+  background-color: #fffeee;
+}
+a
+   color: #3273dc
+   text-decoration none
+
+.selectedChapter > a {
+   color: #111;
+}
+h1, h2, h3
+   font-family 'EB Garamond', serif
+   font-weight 400
+   color #40408B
+
+h1 { font-size: 3.5rem;}
+h2 { font-size: 3rem;}
+h3 { font-size: 2rem;}
+.toc {
+   position: sticky;
+   top: 2rem;
+   height: 100vh;
+   box-sizing: border-box;
+}
+ins {
+   background-color: Khaki;
+   text-decoration: none;
+   padding: 0.4em;
+   /* margin: 1em; */
+   line-height: 4ex;
+}
+.optional {
+   background-color: #E8FBE8;
+   padding: 0.5ex 1em;
+   /* border-radius: 8px; */
+   /* border: solid 1px #A8FBA8; */
+   border-left: 1ex solid #88CB88;
+}
+table.example tr
+   > td
+      background-color #fffBD0
+   > th
+      background-color darken(#fffBD0, 5%)
+
+mark
+   text-transform uppercase
+
+em {
+  color: #027802;
+  font-style: normal;
+  font-weight: 560;
+  font-family: "Open Sans", sans-serif;
+}
+.strong, strong
+  color: FireBrick
+
+ul.chapter * {
+  list-style-type: none;
+}
+ul {
+   margin: 0.5rem;
+  list-style-type: disc;
+}
+ul li {
+   margin: 0;
+}
+table th {
+   color: #636363;
+   font-size: larger;
+}
+table td p {
+   white-space: pre;
+}
+table.smaller
+   margin-bottom 2rem
+   th 
+      background-color #EEE
+   td
+      font-size smaller
+
+      &:first-child
+         font-size: larger;
+         background-color: #EEE;
+
+         em,strong
+            font-size: 1rem
+
+hr {
+  background: transparent url("/img/hr-stephan-hilbelink2.png") center center no-repeat;
+/* © Stephan Hylbelink */
+  height: 20px;
+}
+/* © Stephan Hylbelink */
+.indent {
+  margin-left: 2em;
+}
+ol {
+  counter-reset: item;
+  list-style: none;
+  font-family: 'Open Sans', sans-serif;
+}
+ol li {
+  margin: 0 0 0.5rem 0;
+}
+ol li:before {
+  color: #008000;
+  content: counters(item, ".") '\a0';
+  counter-increment: item;
+}
