@@ -111,6 +111,8 @@
           lnk: link,
           hsh: hsh
         };
+        delete attr.toc;
+        delete attr.eleventyNavigation;
       } else {
         delete tocc[hsh];
       }
@@ -122,9 +124,9 @@
       x.src = src;
       if (x.attr.template) {
         log('template'.red, x.infile.blue);
-        state.rescan = true;
+        return rebuild(true);
       } else {
-        Compilers.compile(dst, src, body, outfile).then(function(compiled){
+        return Compilers.compile(dst, src, body, outfile).then(function(compiled){
           var ref$;
           switch (false) {
           case !(x.dst !== 'html' || ((ref$ = x.attr) != null ? ref$.layout : void 8) === 'none'):
@@ -133,15 +135,16 @@
             x.wrtn = false;
             return x.cpld = compiled, x;
           }
+        }).then(function(){
+          if (allDone()) {
+            return rebuild(state.rescan);
+          }
         });
-      }
-      if (allDone()) {
-        return rebuild(state.rescan);
       }
     })['catch'](theError);
   };
   rebuild = function(full){
-    var toc, css, writes;
+    var toc, css, js, writes;
     toc = reduce(mergeDeepRight, {})(
     map(function(x){
       return assocPath(__, {
@@ -167,9 +170,10 @@
     })(
     filter(propEq('dst', 'css'))(
     values(site))))));
+    js = [];
     state.rescan = false;
     writes = map(function(x){
-      var layoutName, layout;
+      var layoutName, layout, ref$;
       layoutName = x.attr.layout || 'system';
       layout = (function(it){
         return it || (function(){
@@ -178,13 +182,9 @@
       })(
       find(pathEq(['attr', 'template'], layoutName))(
       values(site)));
-      return Compilers.compile(layout.dst, layout.src, layout.body, x.outfile, {
-        body: x.cpld,
-        toc: Toc.build({
-          _: toc
-        }),
-        css: css
-      }).then(writeOne(x));
+      return Compilers.compile(layout.dst, layout.src, layout.body, x.outfile, (ref$ = {}, import$(ref$, x.attr), ref$.body = x.cpld, ref$.toc = Toc.build({
+        _: toc
+      }), ref$.css = css, ref$.js = js, ref$)).then(writeOne(x));
     })(
     filter(compose$(function(it){
       return it.wrtn;

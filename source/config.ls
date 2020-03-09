@@ -1,5 +1,4 @@
 require! yaml
-log = (require 'ololog').configure {+tag, -locate}
 require! fs
 
 userConfigFile = process.cwd! + '/20ful-config.yaml'
@@ -22,7 +21,6 @@ defaultConfig =
          headerless: true,
          multiline: true,
          rowspan: true
-
 
 module.exports = if fs.existsSync userConfigFile
    then

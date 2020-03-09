@@ -101,13 +101,16 @@ processFile = (hsh) ->
             ord: tocEntry.order
             lnk: link
             hsh: hsh
+         delete! attr.toc
+         delete! attr.eleventyNavigation
+            
       else
          delete tocc[hsh]
 
       x <<< {outfile, body, dst, attr, link, src}
       if x.attr.template
          log 'template'.red, x.infile.blue
-         state.rescan = yes
+         rebuild yes
       else
          Compilers.compile dst, src, body, outfile
          .then (compiled) ->
@@ -117,8 +120,9 @@ processFile = (hsh) ->
                x.wrtn = no
                x <<< cpld: compiled
 
-      if allDone!
-         rebuild state.rescan
+         .then ->
+            if allDone!
+               rebuild state.rescan
 
    .catch theError
 
@@ -139,6 +143,8 @@ rebuild = (full) !->
       |> sortBy (.attr.order)
       |> map -> "<link rel=stylesheet href='/#{it.link}'>"
       |> join ''
+      
+   js = []
 
    state.rescan = no
 
@@ -152,11 +158,14 @@ rebuild = (full) !->
          layout = values site
             |> find pathEq <[attr template]>, layoutName
             |> (or throw Error "no layout named: #layoutName")
-         
-         Compilers.compile layout.dst, layout.src, layout.body, x.outfile,
+
+         Compilers.compile layout.dst, layout.src, layout.body, x.outfile, {
+            ...x.attr
             body: x.cpld
             toc: Toc.build _:toc
             css: css
+            js: js
+            }
 
          .then writeOne x
 
