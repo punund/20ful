@@ -32,7 +32,7 @@
   };
   site = {};
   tocc = onChange({}, function(){
-    return state.rescan = true;
+    state.rescan = true;
   });
   state.mode = (function(){
     switch (process.argv[2]) {
@@ -52,14 +52,14 @@
       return it.ping;
     }, site)));
   };
-  writeOne = function(x, compiled){
+  writeOne = curry$(function(x, compiled){
     x.wrtn = true;
     return mkdirp(Path.dirname(x.outfile)).then(function(){
       return fs.writeFile(x.outfile, compiled);
     }).then(function(){
       return log('→', x.outfile.magenta);
     })['catch'](theError);
-  };
+  });
   processFile = function(hsh){
     var x, ref$, dir, base, ext, name, dir0, dirs, dirn;
     x = site[hsh];
@@ -184,21 +184,21 @@
           _: toc
         }),
         css: css
-      }).then(function(it){
-        return writeOne(x, it);
-      });
+      }).then(writeOne(x));
     })(
-    filter(function(y){
-      return full || !y.wrtn;
-    })(
+    filter(compose$(function(it){
+      return it.wrtn;
+    }, not$, (function(it){
+      return full || it;
+    })))(
     filter(compose$(hasPath(['attr', 'template']), not$))(
     filter(compose$(pathEq(['attr', 'layout'], 'none'), not$))(
     filter(propEq('dst', 'html'))(
     values(site))))));
-    return Promise.all(writes).then(function(){
+    Promise.all(writes).then(function(){
       log.green('Ready.');
       if (state.mode === '') {
-        return process.exit(0);
+        process.exit(0);
       }
     });
   };
@@ -210,10 +210,9 @@
     default:
       log.error.red(it);
     }
-    return process.exit(1);
+    process.exit(1);
   };
   watcher.on('ready', function(){
-    log.red('---');
     if (!state.mode.match(/b/)) {
       return;
     }
@@ -250,6 +249,19 @@
     var own = {}.hasOwnProperty;
     for (var key in src) if (own.call(src, key)) obj[key] = src[key];
     return obj;
+  }
+  function curry$(f, bound){
+    var context,
+    _curry = function(args) {
+      return f.length > 1 ? function(){
+        var params = args ? args.concat() : [];
+        context = bound ? context || this : this;
+        return params.push.apply(params, arguments) <
+            f.length && arguments.length ?
+          _curry.call(context, params) : f.apply(context, params);
+      } : f;
+    };
+    return _curry();
   }
   function compose$() {
     var functions = arguments;

@@ -1,5 +1,5 @@
-global <<< require 'ramda' # can't be bothered with R.
-# N.B. "or", "and", "is" are shadowed by LiveScript
+global <<< require 'ramda'
+
 require! './config': C
 require! './compilers': Compilers
 require! './toc': Toc
@@ -23,7 +23,6 @@ require! \front-matter
 require! \on-change
 require! pug
 
-
 state = 
    rescan: no
    filecount: 0
@@ -31,7 +30,7 @@ state =
    
 site = {}
 
-tocc = onChange {}, -> state.rescan = yes
+tocc = onChange {}, !-> state.rescan = yes
 
 state.mode = switch process.argv[2]
 | \build => ''
@@ -45,7 +44,7 @@ allDone = ->
    state.fileCount == length keys filter (.ping), site
 
 #-------------------------------------------------
-writeOne = (x, compiled) ->
+writeOne = (x, compiled) -->
    x.wrtn = yes
    mkdirp Path.dirname x.outfile
    .then ->
@@ -124,7 +123,7 @@ processFile = (hsh) ->
    .catch theError
 
 #-------------------------------------------------
-rebuild = (full) ->
+rebuild = (full) !->
    toc = values site
       |> filter (.toc)
       |> map (x) ->
@@ -144,31 +143,30 @@ rebuild = (full) ->
    state.rescan = no
 
    writes = values site
-   |> filter propEq \dst, \html
-   |> filter (!) << pathEq <[attr layout]>, \none
-   |> filter (!) << hasPath <[attr template]>
-   |> filter (y) -> full || not y.wrtn
-   |> map (x) ->
-      layoutName = x.attr.layout or \system
-      layout = values site
-         |> find pathEq <[attr template]>, layoutName
-         |> (or throw Error "no layout named: #layoutName")
-      
-      Compilers.compile layout.dst, layout.src, layout.body, x.outfile,
-         body: x.cpld
-         toc: Toc.build _:toc
-         css: css
-      
-      .then ->
-         writeOne x, it
+      |> filter propEq \dst, \html
+      |> filter (!) << pathEq <[attr layout]>, \none
+      |> filter (!) << hasPath <[attr template]>
+      |> filter (full ||) << (!) << (.wrtn)
+      |> map (x) ->
+         layoutName = x.attr.layout or \system
+         layout = values site
+            |> find pathEq <[attr template]>, layoutName
+            |> (or throw Error "no layout named: #layoutName")
+         
+         Compilers.compile layout.dst, layout.src, layout.body, x.outfile,
+            body: x.cpld
+            toc: Toc.build _:toc
+            css: css
 
-   Promise.all(writes).then ->
+         .then writeOne x
+
+   Promise.all(writes).then !->
       log.green 'Ready.'
       if state.mode is ''
          process.exit 0
       
 #-------------------------------------------------
-theError = ->
+theError = !->
    switch it?name
       | \Error => log.error.bgMagenta it.message
       | _      => log.error.red it
@@ -177,7 +175,6 @@ theError = ->
 #-------------------------------------------------
 watcher.on \ready !->
 
-   log.red '---'
    unless state.mode.match /b/ => return
    bs.init {
       server: C.outroot

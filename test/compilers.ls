@@ -31,8 +31,9 @@ test ' reject not its suffixes', ->
    it.falsy dst
 
 test ' compile Pug templates', ->>
-   compiled = await compilers.compile(\html, \pug, 'p foo !{foo}', \file, {foo: '<bar>'})
-   it.is compiled, '<p>foo <bar></p>'
+   compiled = await compilers.compile(\html, \pug, 'p foo !{foo}', \file,
+      {foo: '!{bubu}'})
+   it.is compiled, '<p>foo !{bubu}</p>'
 
 test ' compile Nunjucks', ->>
    compiled = await compilers.compile(\html, \njk,

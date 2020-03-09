@@ -6,14 +6,15 @@ Static site generator that makes sense.
 ## Installation
 
 ````
-$ npm init
+$ npm init -y
 $ npm install 20ful
 ````
 ````
-$ mkdirp src/html
+$ mkdir -p src/html
 $ cat > src/html/start.md
 ---
 index: true
+layout: none
 ---
 # Hello world!
 ^D
@@ -40,15 +41,16 @@ writes them out.
 
 ## Conversions
 
-The generator natively supports following transformations:
+The generator natively supports following conversions:
 * for HTML: Markdown (`.md`), Pug (`.pug`), Nunjucks (`.njk`)
 * for CSS: Stylus (`.styl`), Sass (`.scss`, `.sass`)
-* for JavasScript: LiveScript (`.ls`)
+* for JavaScript: LiveScript (`.ls`)
 
 Some directives may be given in the front matter (FM) of individual files. File
 type is determined by its suffix.  All other files are copied as is to their
-destinations, including plain HTML, CSS, and JavasScript. FM is, however, always
-stripped.
+destinations, including plain HTML, CSS, and JavasScript.
+
+Front matter is always stripped.
 
 ## Directory structure
 
@@ -59,7 +61,7 @@ Folder `src/html` is special, the "html" part will be stripped in the resulting
 path, and for files compiled to HTML file name is made a folder, and the content
 is placed in `index.html` in it:
 
-    src/server-config       → \_site/server-config
+    src/server-config        → \_site/server-config
     src/assets/css/main.styl → \_site/assets/css/main.css
     src/html/mypage.md       → \_site/mypage/index.html
 
@@ -111,8 +113,7 @@ If the plugin takes options, give them as sub-keys.
 
 ## Integrated functionality
 
-This is what is called "plugins" elsewhere. This project is tiny (300 lines),
-so we can't be bothered with plugins.
+This is what is called "plugins" elsewhere.
 
 ### Templates
 
@@ -124,6 +125,22 @@ depending on the attribute `layout` in FM:
 
 Templated file is compiled into a `body` variable, which the template must
 mention in unsafe mode (`!{body}`, `{{body | safe}}`).
+
+There is no designated location to store your templates, as long as they are
+witin `_src`.
+
+Please note that a template is used by default, so if you don't want any, you
+may either
+
+* put `layout: none` in every file's FM
+* place somewhere a Pug file :
+````
+---
+template: system
+---
+!{body}
+````
+and your HTML will be wrapped in new shiny nothing.
 
 ### Table of content
 
@@ -169,3 +186,12 @@ For all files that compile to JavasScript `js` variable stores a sequence of
     <script src='/path/filename-51536.js><js ...
 
 To control the order of tags, include attribute `order` in the FM: `order: 20`.
+
+## Motivation
+
+I was amazed by the amount of effort put by people into something as simple as
+site generators, and at the same time frustrated by the absence of obvious
+functionality, such as preprocessing of CSS.
+
+This project is not nearly as grandiose (under 350 lines of code as of now),
+but it covers most basic needs.

@@ -53,9 +53,9 @@
   test(' compile Pug templates', async function(it){
     var compiled;
     compiled = (await compilers.compile('html', 'pug', 'p foo !{foo}', 'file', {
-      foo: '<bar>'
+      foo: '!{bubu}'
     }));
-    return it.is(compiled, '<p>foo <bar></p>');
+    return it.is(compiled, '<p>foo !{bubu}</p>');
   });
   test(' compile Nunjucks', async function(it){
     var compiled;
