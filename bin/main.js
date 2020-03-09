@@ -66,7 +66,6 @@
     ref$ = Path.parse(x.infile), dir = ref$.dir, base = ref$.base, ext = ref$.ext, name = ref$.name;
     ref$ = split('/', dir), dir0 = ref$[1], dirs = slice$.call(ref$, 2);
     dirn = join$.call(dirs, '/') || '';
-    log.yellow('rescan:', state.rescan);
     return fs.readFile(x.infile).then(function(it){
       var src, dst, fm, ref$, body, attr, bust, pj, outfile, link, tocEntry;
       src = tail(ext);
@@ -104,7 +103,6 @@
       }());
       x.ping = true;
       tocEntry = attr.toc || attr.eleventyNavigation;
-      log('toc?!', tocEntry);
       if (tocEntry) {
         import$(tocc[hsh] || (tocc[hsh] = {}), tocEntry);
         x.toc = {
@@ -122,7 +120,6 @@
       x.attr = attr;
       x.link = link;
       x.src = src;
-      log(x.dst, x.outfile, 'rescan:', state.rescan);
       if (x.attr.template) {
         log('template'.red, x.infile.blue);
         state.rescan = true;
@@ -138,7 +135,6 @@
           }
         });
       }
-      log.red(x.dst, x.outfile, 'rescan:', state.rescan);
       if (allDone()) {
         return rebuild(state.rescan);
       }
@@ -196,8 +192,9 @@
       return full || !y.wrtn;
     })(
     filter(compose$(hasPath(['attr', 'template']), not$))(
+    filter(compose$(pathEq(['attr', 'layout'], 'none'), not$))(
     filter(propEq('dst', 'html'))(
-    values(site)))));
+    values(site))))));
     return Promise.all(writes).then(function(){
       log.green('Ready.');
       if (state.mode === '') {

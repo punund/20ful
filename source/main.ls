@@ -64,7 +64,6 @@ processFile = (hsh) ->
    [, dir0, ...dirs] = split '/', dir
    dirn = (dirs * '/') or ''
 
-   log.yellow 'rescan:', state.rescan
    fs.readFile x.infile
    .then ->  # read file
       src = tail ext
@@ -96,7 +95,6 @@ processFile = (hsh) ->
          
       x <<< {+ping}
       tocEntry = attr.toc or attr.eleventyNavigation
-      log 'toc?!', tocEntry
       if tocEntry
          tocc.{}[hsh] <<< tocEntry
          x.toc = 
@@ -108,7 +106,6 @@ processFile = (hsh) ->
          delete tocc[hsh]
 
       x <<< {outfile, body, dst, attr, link, src}
-      log x.dst, x.outfile, 'rescan:', state.rescan
       if x.attr.template
          log 'template'.red, x.infile.blue
          state.rescan = yes
@@ -121,7 +118,6 @@ processFile = (hsh) ->
                x.wrtn = no
                x <<< cpld: compiled
 
-      log.red x.dst, x.outfile, 'rescan:', state.rescan
       if allDone!
          rebuild state.rescan
 
@@ -149,6 +145,7 @@ rebuild = (full) ->
 
    writes = values site
    |> filter propEq \dst, \html
+   |> filter (!) << pathEq <[attr layout]>, \none
    |> filter (!) << hasPath <[attr template]>
    |> filter (y) -> full || not y.wrtn
    |> map (x) ->
