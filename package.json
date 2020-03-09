@@ -1,47 +1,62 @@
 {
-  "name": "nfo",
-  "version": "1.0.0",
-  "description": "Ksinoy documentation",
+  "name": "20ful",
+  "version": "0.1.0",
+  "description": "Static site generator",
   "engines": {
     "node": ">=13.5"
   },
-  "repository": "http://bitbucker.org",
+  "repository": {
+    "type": "git",
+    "url": "git://github.com/punund/20ful.git"
+  },
   "main": "index.js",
   "scripts": {
-    "start": "lsc -k index.ls",
-    "test": "nodemon index.ls"
+    "prepare": "lsc -k -co bin/ source/",
+    "start": "lsc -kw source/main",
+    "pretest": "lsc -k -co bin/ source/",
+    "test": "lsc -kc test/ && ava --verbose"
   },
+  "bin": "./cmd.js",
   "author": "Iļja Ketris",
-  "license": "SEE LICENSE IN license.txt",
+  "license": "MIT",
   "keywords": [
-    "language"
+    "static-site-generator",
+    "static-site",
+    "website",
+    "jekyll",
+    "11ty",
+    "20ful",
+    "livescript",
+    "markdown",
+    "stylus",
+    "sass",
+    "pug"
   ],
-  "contributors": [
-    "none"
-  ],
-  "bugs": "no@ma.il",
-  "homepage": "http://ksinoy.info",
+  "contributors": [],
+  "bugs": "https://github.com/punund/20ful.git/issues",
+  "homepage": "https://github.com/punund/20ful.git",
   "devDependencies": {
-    "nodemon": "^2.0.2"
+    "ava": "^3.5.0"
   },
   "dependencies": {
-    "bluebird": "^3.7.2",
+    "base58": "^2.0.1",
     "browser-sync": "^2.26.7",
     "chokidar": "^3.3.1",
     "front-matter": "^3.1.0",
     "glob": "^7.1.6",
     "livescript": "^1.6.0",
-    "lodash": "^4.17.15",
     "markdown-it": "^10.0.0",
-    "markdown-it-attrs": "^3.0.1",
-    "markdown-it-div": "^1.1.0",
-    "markdown-it-ins": "^3.0.0",
     "markdown-it-mark": "^3.0.0",
     "markdown-it-multimd-table": "^4.0.1",
     "mkdirp": "^1.0.3",
-    "ololog": "^1.1.151",
-    "on-change": "^1.6.2",
+    "nunjucks": "^3.2.0",
+    "ololog": "^1.1.155",
+    "on-change": "^1.6.4",
     "pug": "^2.0.4",
-    "stylus": "^0.54.7"
+    "ramda": "^0.27.0",
+    "sass": "^1.26.2",
+    "string-hash": "^1.1.3",
+    "stylus": "^0.54.7",
+    "yaml": "^1.8.0"
   }
 }
