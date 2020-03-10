@@ -1,3 +1,5 @@
+[](https://github.com/punund/20ful/workflows/publish/badge.svg)
+
 # 20ful
 
 Static site generator that makes sense.
