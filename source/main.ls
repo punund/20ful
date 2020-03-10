@@ -180,8 +180,8 @@ rebuild = (full) !->
          .then writeOne x
 
    Promise.all(writes).then !->
-      log.green 'Ready.'
-      if state.mode is ''
+      if state.mode is '' and allDone!
+         log.green 'Ready.'
          process.exit 0
       
 #-------------------------------------------------

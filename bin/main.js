@@ -211,8 +211,8 @@
     filter(propEq('dst', 'html'))(
     values(site)))))));
     Promise.all(writes).then(function(){
-      log.green('Ready.');
-      if (state.mode === '') {
+      if (state.mode === '' && allDone()) {
+        log.green('Ready.');
         process.exit(0);
       }
     });
