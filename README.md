@@ -159,11 +159,11 @@ For all files that compile to JavasScript `js` variable stores a sequence of
 
     <script src='/path/filename-51536.js'><js ...
 
-In a pug template, put `| !{css}` and `| !{js}` withing the head.
+In a pug template, put `| !{css}` and `| !{js}` within the head.
 
 ### order: _number_
 
-This controls the order of tags wihin cache-busted `css` and `js` variables.
+This controls the order of tags within cache-busted `css` and `js` variables.
 
 ### ignore: _boolean_
 
