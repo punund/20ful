@@ -12,7 +12,6 @@
   "main": "index.js",
   "scripts": {
     "prepare": "lsc -k -co bin/ source/",
-    "start": "lsc -kw source/main",
     "pretest": "lsc -k -co bin/ source/",
     "test": "lsc -kc test/ && ava --verbose"
   },
