@@ -6,5 +6,5 @@ Or you can just
 
 [![][image]][link]
 
-[link]: https://app.netlify.com/start/deploy?repository=https://github.com/punund/20ful/tree/master/example
+[link]: https://app.netlify.com/start/deploy?repository=https://github.com/punund/20ful/blob/tree/master/example
 [image]: https://www.netlify.com/img/deploy/button.svg
