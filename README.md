@@ -8,12 +8,14 @@ Static site generator that makes sense.
 $ npm init -y
 $ npm install 20ful
 ````
+
+## Quick start
+
 ````
 $ mkdir -p src/html
-$ cat > src/html/start.md
+$ cat > src/html/hello.md
 ---
 index: true
-layout: none
 ---
 # Hello world!
 ^D
@@ -21,8 +23,6 @@ $ 20ful
 ````
 
 ## Running and command line options
-
-Running
 
 `20ful build`
 compiles your input files and exits
@@ -38,8 +38,27 @@ all the above, and starts web browser
 The generator takes in your input files, possibly applies conversions, and
 writes them out.
 
-Any file can have YAML-formatted front matter (FM), which is stripped after
-processing.
+## Directory structure
+
+Put all your stuff in `src/`. It will get compiled and placed into
+`_site/`, preserving directory structure.  Dot files are ignored.
+
+    src/server-config        → \_site/server-config
+    src/assets/css/main.styl → \_site/assets/css/main.css
+    src/html/.git/           → (ignored)
+
+Folder `src/html/` is special, the "html" part will be stripped in the resulting
+path, and for files compiled to HTML file name is made a folder, and the content
+is placed in `index.html` in it:
+
+    src/html/mypage.md       → \_site/mypage/index.html
+
+The reason is that sometimes hosters want you to put extra stuff in the site's
+root, and it's better to keep it separate from your pages.
+
+This also means that if you create two files whose pathnames are different only
+in `html/` part, only one of them will get to the output location, so don't do
+that.
 
 ## Conversions
 
@@ -51,50 +70,109 @@ The generator natively supports following conversions:
 File type is determined by its suffix.  All other files are copied as is to
 their destinations, including plain HTML, CSS, and JavasScript.
 
-## Directory structure
+Any file can have YAML-formatted front matter (FM), which is stripped after
+processing.  Some behavior is defined by the front matter data.
 
-Put all your stuff in `src/`. It will get compiled and placed into
-`_site/`, preserving directory structure.  Dot files are ignored.
+## Front matter attributes
 
-Folder `src/html` is special, the "html" part will be stripped in the resulting
-path, and for files compiled to HTML file name is made a folder, and the content
-is placed in `index.html` in it:
+### template: *name*
 
-    src/server-config        → \_site/server-config
-    src/assets/css/main.styl → \_site/assets/css/main.css
-    src/html/mypage.md       → \_site/mypage/index.html
+The file is a template, normally `pug` or `njk`. There is no designated location
+to store your templates, as long as they are within `src`, nor there are any
+particular filenames that you must give them. The following template
+variables are special:
 
-The reason is that sometimes hosters want you to put extra stuff in the site's
-root, and it's better to keep it separate from your pages:
+#### body
+The rendered file that used this template.
 
-    src/CNAME                → \_site/CNAME
-    src/html/file.txt        → \_site/file.txt
-    src/html/.git/           → (ignored)
+#### toc
+Table of content, or navigation, within an `<ol>`. Built from `toc` attributes,
+see below.
 
-This also means that if you create two files whose pathnames are different only
-in `html/` part, only one of them will get to the output location, so don't do
-that.
+#### css
+Set of `<link>` attributes referring to CSS files, if cache busting is enabled.
+See below.
 
-Additionally, if there is `index: true` in the front matter, the extra folder
-is stripped too:
+#### js
+Set of `<script>` attributes referring to JS files, if cache busting is enabled.
 
-    src/html/introduction.md → \_site/index.html
+All special variables contain HTML and therefore must be passed in unsafe mode.
+Default template `system` is always present, and just renders the body, so you
+may want to name your first template "system".
 
-provided that `introduction.md` looks like
-````
----
-index: true
----
-# Introduction
+### layout: _name_
 
-Welcome to lorem ips...
-````
+The file is rendered using the named template. Possible values:
+
+* _some name_
+named template is used.
+* `none`
+no template is used
+* _(attribute not present)_
+template "system" is used
+
+### index: _boolean_
+
+If set to true, this file is written to top-level `index.html` in the output
+direcory.
+
+### toc:
+
+Object, describing a table of content entry. Its attributes:
+
+* key: (visible label in the TOC link)
+* order: (entries are sorted using this value)
+
+Table of content is hierarchical and follows the directory structure. To have a
+useful table of content organize your files:
+
+      My-Stories.md           [FM]  toc:
+                                       key: My cool stories
+      My-Stories/
+         Cool-story-1.md      [FM]  toc:
+                                       key: First cool story
+                                       order: 10
+         Another-story.md     [FM]  toc: ...
+
+There is no need (and no way) to specify a parent, you can rearrange your
+pages just moving them around, and TOC will be automatically rebuilt, and
+will render to an ordered list: `<ol><li><a href='/'>My cool stories</a...`
+
+
+### bust-cache: _boolean_
+
+If set to "true", enables cache busting for this CSS or JS file. Cache busting
+of CSS and JS assets is done by automatically adding a hash suffix to the
+filename, changing as the file content changes.  Template variables `css` and
+`js` will have the whole sequences of `<link>` and `<script>` attributes which
+you need to pass verbatim to templates.
+
+For all files that compile to CSS `css` variable stores a sequence of `link`
+tags:
+
+    <link rel=stylesheet href='/path/filename-34856.css'><link ...
+    
+For all files that compile to JavasScript `js` variable stores a sequence of
+`script` tags:
+
+    <script src='/path/filename-51536.js'><js ...
+
+In a pug template, put `| !{css}` and `| !{js}` withing the head.
+
+### order: _number_
+
+This controls the order of tags wihin cache-busted `css` and `js` variables.
+
+### ignore: _boolean_
+
+If set to true, this file is skipped.
+
 
 ## Config file
 
 User configuration is read from `./20ful-config.yaml`.  The defaults are:
 
-````
+```
 source:  src
 outroot: _site
 markdown-it-plugins:
@@ -103,99 +181,13 @@ markdown-it-plugins:
     headerless:   true
     multiline:    true
     rowspan:      true
-````
+```
 
 Markdown-it-plugins are what they appear to be. To add a markdown-it plugin:
 * `npm install markdown-it-plugin-name`
 * mention it in the config (`false` to disable)
 
 If the plugin takes options, give them as sub-keys.
-
-## Other functionality
-
-This is what is called "plugins" elsewhere.
-
-### Templates
-
-Templates have `template: <name>` in their FM. Source files are processed
-depending on the attribute `layout` in the front matter:
-* `layout: <name>` named template is used
-* `layout: none` no template is used
-* no `layout` key: template "system" is used
-
-Templated file is compiled into a `body` variable, which the template must
-mention in unsafe mode (`!{body}`, `{{body | safe}}`).
-
-There is no designated location to store your templates, as long as they are
-within `_src`, nor there are required filenames for them.
-
-All the scalar front matter variables are passed back to the template, e.g. 
-you may have set the title:
-
-````
----
-title: My page
----
-````
-so that the template may have `<title>#{title} | My site</title>` etc.
-
-Please note that a `system` template is used by default, so if you don't want
-any template, you may either
-
-* put `layout: none` in every file's FM
-* place somewhere a Pug file :
-````
----
-template: system
----
-!{body}
-````
-and your HTML will be wrapped in new shiny nothing.
-
-### Table of content
-
-Templated files may have `toc` object in their front matter (or
-`eleventyNavigation`), containing `key` and `order` attributes. The `key`
-becomes the item's label for the generated table of content. Links are
-generated automatically.
-
-Table of content is hierarchical and follows the directory structure. To have a
-useful table of content organize your files:
-
-````
-      My-Stories.md           [FM]  toc: key: My cool stories
-      My-Stories/
-         Cool-story-1.md      [FM]  toc: key: First cool story
-         ...
-````
-This way there is no need to specify a parent, and you can rearrange your
-pages just moving them around, and TOC will be automatically rebuilt, and
-will render to an ordered list: `<ol><li><a href='/'>My cool stories</a...`
-
-The TOC is placed in `toc` variable, which templates must unsafely include.
-
-### Cache busting
-
-Cache busting of CSS and JS assets may be done by automatically adding a suffix
-to the filename, changing as the file content changes.  To use it, place
-`bust-cache: true` in the FM, and there will be variables `css` and `js` to use
-in your templates, which generates the whole `<link>` and `<script>` attributes
-which you need to pass verbatim to templates:
-
-* in Pug: `| !{css}`, `| !{js}`
-* in Nunjucks: `{{ css | safe }}`, `{{ js | safe }}`
-
-For all files that compile to CSS `css` variable stores a sequence of `link`
-tags:
-
-    <link rel=stylesheet href='/path/filename-34856.css><link ...
-    
-For all files that compile to JavasScript `js` variable stores a sequence of
-`script` tags:
-
-    <script src='/path/filename-51536.js><js ...
-
-To control the order of tags, include attribute `order` in the FM: `order: 20`.
 
 ## Motivation
 
@@ -204,4 +196,4 @@ site generators, and at the same time frustrated by the absence of obvious
 functionality, such as preprocessing of CSS.
 
 This project is not nearly as grandiose (under 350 lines of code as of now),
-but it covers most basic needs.
+still it covers most basic needs.

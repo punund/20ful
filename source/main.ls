@@ -27,7 +27,9 @@ state =
    rescan: no
    filecount: 0
    mode: ''
-   
+
+emptyLayout = src: \pug, dst: \html, body: '|!{body}'
+
 site = {}
 
 tocc = onChange {}, !-> state.rescan = yes
@@ -72,7 +74,10 @@ processFile = (hsh) ->
          |> defaultTo src
 
       fm = frontMatter it.toString!
-      [body, attr] = [fm.body, fm.attributes]
+      body = fm.body
+      attr = fm.attributes |> ifElse (.ignore), empty, identity
+      # ---
+      # ignore: true
       
       bust = if attr.'bust-cache'
          then
@@ -94,24 +99,28 @@ processFile = (hsh) ->
          
       x <<< {+ping}
       tocEntry = attr.toc or attr.eleventyNavigation
-      if tocEntry
-         tocc.{}[hsh] <<< tocEntry
-         x.toc = 
-            key: tocEntry.key
-            ord: tocEntry.order
-            lnk: link
-            hsh: hsh
-         delete! attr.toc
-         delete! attr.eleventyNavigation
-            
-      else
-         delete tocc[hsh]
+      if dst is \html
+         if tocEntry
+            then
+               tocc.{}[hsh] <<< tocEntry
+               x.toc = 
+                  key: tocEntry.key
+                  ord: tocEntry.order
+                  lnk: link
+                  # hsh: hsh
+            else
+               tocc.{}[hsh] = {}
 
+      delete! attr.toc
+      delete! attr.eleventyNavigation
+            
       x <<< {outfile, body, dst, attr, link, src}
-      if x.attr.template
+      switch
+      | not x.attr =>
+      | x.attr.template
          log 'template'.red, x.infile.blue
          rebuild yes
-      else
+      | _
          Compilers.compile dst, src, body, outfile
          .then (compiled) ->
             | x.dst isnt \html or x.attr?layout is \none
@@ -150,6 +159,7 @@ rebuild = (full) !->
 
    writes = values site
       |> filter propEq \dst, \html
+      |> filter (!) << (.attr.ignore)
       |> filter (!) << pathEq <[attr layout]>, \none
       |> filter (!) << hasPath <[attr template]>
       |> filter (full ||) << (!) << (.wrtn)
@@ -157,7 +167,7 @@ rebuild = (full) !->
          layoutName = x.attr.layout or \system
          layout = values site
             |> find pathEq <[attr template]>, layoutName
-            |> (or throw Error "no layout named: #layoutName")
+            |> (or emptyLayout)
 
          Compilers.compile layout.dst, layout.src, layout.body, x.outfile, {
             ...x.attr
