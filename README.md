@@ -22,6 +22,8 @@ index: true
 $ 20ful
 ````
 
+You can also check the [example project](@punund/20ful-example).
+
 ## Running and command line options
 
 `20ful build`
