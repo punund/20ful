@@ -43,15 +43,15 @@ watcher = chokidar.watch C.source, ignored: /(^|[\/\\])\../
 
 #-------------------------------------------------
 allDone = ->
-   state.fileCount == length keys filter (.ping), site
+   state.fileCount == length keys filter (prop it), site
 
 #-------------------------------------------------
 writeOne = (x, compiled) -->
-   x.wrtn = yes
    mkdirp Path.dirname x.outfile
    .then ->
       fs.writeFile x.outfile, compiled
    .then ->
+      x.wrtn = yes
       log '→', x.outfile.magenta
    .catch theError
 
@@ -119,6 +119,7 @@ processFile = (hsh) ->
       | not x.attr =>
       | x.attr.template
          log 'template'.red, x.infile.blue
+         x.wrtn = yes
          rebuild yes
       | _
          Compilers.compile dst, src, body, outfile
@@ -130,7 +131,7 @@ processFile = (hsh) ->
                x <<< cpld: compiled
 
          .then ->
-            if allDone!
+            if allDone \ping
                rebuild state.rescan
 
    .catch theError
@@ -180,7 +181,7 @@ rebuild = (full) !->
          .then writeOne x
 
    Promise.all(writes).then !->
-      if state.mode is '' and allDone!
+      if state.mode is '' and allDone \wrtn
          log.green 'Ready.'
          process.exit 0
       

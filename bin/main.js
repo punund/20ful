@@ -52,16 +52,14 @@
   watcher = chokidar.watch(C.source, {
     ignored: /(^|[\/\\])\../
   });
-  allDone = function(){
-    return state.fileCount === length(keys(filter(function(it){
-      return it.ping;
-    }, site)));
+  allDone = function(it){
+    return state.fileCount === length(keys(filter(prop(it), site)));
   };
   writeOne = curry$(function(x, compiled){
-    x.wrtn = true;
     return mkdirp(Path.dirname(x.outfile)).then(function(){
       return fs.writeFile(x.outfile, compiled);
     }).then(function(){
+      x.wrtn = true;
       return log('→', x.outfile.magenta);
     })['catch'](theError);
   });
@@ -138,6 +136,7 @@
         break;
       case !x.attr.template:
         log('template'.red, x.infile.blue);
+        x.wrtn = true;
         return rebuild(true);
       default:
         return Compilers.compile(dst, src, body, outfile).then(function(compiled){
@@ -150,7 +149,7 @@
             return x.cpld = compiled, x;
           }
         }).then(function(){
-          if (allDone()) {
+          if (allDone('ping')) {
             return rebuild(state.rescan);
           }
         });
@@ -211,7 +210,7 @@
     filter(propEq('dst', 'html'))(
     values(site)))))));
     Promise.all(writes).then(function(){
-      if (state.mode === '' && allDone()) {
+      if (state.mode === '' && allDone('wrtn')) {
         log.green('Ready.');
         process.exit(0);
       }
