@@ -1,4 +1,4 @@
-[](https://github.com/punund/20ful/workflows/publish/badge.svg)
+![](https://github.com/punund/20ful/workflows/publish/badge.svg)
 
 # 20ful
 
