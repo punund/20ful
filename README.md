@@ -1,4 +1,4 @@
-![](https://github.com/punund/20ful/workflows/publish-npmjs/badge.svg)
+[comment]: <> ![](https://github.com/punund/20ful/workflows/publish-npmjs/badge.svg)
 
 # 20ful
 
