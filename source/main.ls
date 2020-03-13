@@ -1,4 +1,7 @@
 global <<< require 'ramda'
+global <<< log: (require 'ololog').configure \
+   {+tag, -locate, stringify: 
+      maxStringLength: 50, maxDepth: 8}
 
 require! './config': C
 require! './compilers': Compilers
@@ -11,10 +14,6 @@ require! mkdirp
 require! glob
 require! \string-hash
 require! \base58
-
-log = (require 'ololog').configure \
-   tag: yes, locate: no, stringify: 
-      maxStringLength: 50, maxDepth: 8
 
 bs = require('browser-sync').create!
 
@@ -35,11 +34,21 @@ site = {}
 tocc = onChange {}, !-> state.rescan = yes
 
 state.mode = switch process.argv[2]
+| \version
+   require(__dirname + '/../package.json') |> (.version) |> log
+   process.exit 0
 | \build => ''
 | \watch => 'w'
 | _      => 'bw'
 
+state.fileCount = length glob.sync C.source + '/**/*', {+nodir}
+
 watcher = chokidar.watch C.source, ignored: /(^|[\/\\])\../
+
+#-------------------------------------------------
+allIn = ->
+   # log state.fileCount, length keys site
+   state.fileCount is length keys site
 
 #-------------------------------------------------
 allDone = ->
@@ -51,8 +60,8 @@ writeOne = (x, compiled) -->
    .then ->
       fs.writeFile x.outfile, compiled
    .then ->
-      x.wrtn = yes
       log '→', x.outfile.magenta
+      x.done = 4
    .catch theError
 
 #-------------------------------------------------
@@ -107,7 +116,7 @@ processFile = (hsh) ->
                   key: tocEntry.key
                   ord: tocEntry.order
                   lnk: link
-                  # hsh: hsh
+                  hsh: hsh
             else
                tocc.{}[hsh] = {}
 
@@ -115,29 +124,33 @@ processFile = (hsh) ->
       delete! attr.eleventyNavigation
             
       x <<< {outfile, body, dst, attr, link, src}
-      switch
-      | not x.attr =>
+
+      Promise.resolve switch
+      | not x.attr
+         x.done = 4
       | x.attr.template
+         x.done = 1.5
          log 'template'.red, x.infile.blue
-         x.wrtn = yes
-         rebuild yes
       | _
          Compilers.compile dst, src, body, outfile
          .then (compiled) ->
-            | x.dst isnt \html or x.attr?layout is \none
-               writeOne x, compiled
+            | x.dst is \html and x.attr.layout isnt \none
+               x <<< cpld: compiled, done: 2
             | _
-               x.wrtn = no
-               x <<< cpld: compiled
+               writeOne x, compiled
 
-         .then ->
-            if allDone \ping
-               rebuild state.rescan
+      .then ->
+         if allIn! and all ((.done) >> (> 1)), values site
+            Promise.all rebuild!
+            .then ->
+               if state.mode is '' and all (propEq \done, 4), values site
+                  process.exit 0
+               
 
    .catch theError
 
 #-------------------------------------------------
-rebuild = (full) !->
+rebuild = ->
    toc = values site
       |> filter (.toc)
       |> map (x) ->
@@ -156,15 +169,10 @@ rebuild = (full) !->
       
    js = []
 
-   state.rescan = no
-
    writes = values site
-      |> filter propEq \dst, \html
-      |> filter (!) << (.attr.ignore)
-      |> filter (!) << pathEq <[attr layout]>, \none
-      |> filter (!) << hasPath <[attr template]>
-      |> filter (full ||) << (!) << (.wrtn)
+      |> filter (.done) >> (is 2)
       |> map (x) ->
+         # x.done = 3
          layoutName = x.attr.layout or \system
          layout = values site
             |> find pathEq <[attr template]>, layoutName
@@ -173,18 +181,15 @@ rebuild = (full) !->
          Compilers.compile layout.dst, layout.src, layout.body, x.outfile, {
             ...x.attr
             body: x.cpld
-            toc: Toc.build _:toc
+            toc: Toc.build _:toc, hsh: x.toc.hsh
             css: css
             js: js
             }
 
          .then writeOne x
+         .then ->
+            layout.done = 4
 
-   Promise.all(writes).then !->
-      if state.mode is '' and allDone \wrtn
-         log.green 'Ready.'
-         process.exit 0
-      
 #-------------------------------------------------
 theError = !->
    switch it?name
@@ -204,15 +209,18 @@ watcher.on \ready !->
 #-------------------------------------------------
 watcher.on \all, (event, infile) !->
 
-   state.fileCount = length glob.sync C.source + '/**/*', {+nodir}
-
    hash = stringHash infile
 
    switch event
-   | \add, \change
-      site[hash] = {infile}
+   | \add
+      if allIn!
+         ++state.fileCount
+      fallthrough
+   | \change
+      site[hash] = {infile, done: 1}
       processFile hash
    | \unlink
+      --state.fileCount
       fs.unlink site[hash]outfile
       delete tocc[hash]
       delete site[hash]

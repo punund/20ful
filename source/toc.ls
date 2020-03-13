@@ -1,17 +1,24 @@
 #-------------------------------------------------
-build = (x) ->
+build = (y) ->
 
-   li = if x.$?key
-      then "<li><a href='/#{x.$.lnk}'>#{x.$.key}</a>\n"
-      else ''
+   hsh = y.hsh
+   makeOl = values >> sortBy(path <[$ ord]>) >> map(desc) >> (* '')
 
-   ol = if x._
-      then "\n<ol>#{makeOl x._}</ol>\n"
-      else ''
+   desc y
 
-   li + ol
-   
-#-------------------------------------------------
-makeOl = values >> sortBy(path <[$ ord]>) >> map(build) >> (* '')
+   function desc x
+      li = switch
+         | not x.$?key
+            ''
+         | hsh is x.$.hsh
+            "<li class=current-item>#{x.$.key}\n"
+         | _
+            "<li><a href='/#{x.$.lnk}'>#{x.$.key}</a>\n"
+
+      ol = if x._
+         then "\n<ol>#{makeOl x._}</ol>\n"
+         else ''
+
+      li + ol
 
 export build
