@@ -4,10 +4,10 @@
   build = function(y){
     var hsh, makeOl;
     hsh = y.hsh;
-    log(hsh);
     makeOl = compose$(values, sortBy(path(['$', 'ord'])), map(desc), (function(it){
       return join$.call(it, '');
     }));
+    desc(y);
     function desc(x){
       var li, ol;
       li = (function(){
@@ -24,7 +24,7 @@
       ol = x._ ? "\n<ol>" + makeOl(x._) + "</ol>\n" : '';
       return li + ol;
     }
-    return desc(y);
+    return desc;
   };
   out$.build = build;
   function compose$() {
