@@ -2,9 +2,8 @@
 build = (y) ->
 
    hsh = y.hsh
-   makeOl = values >> sortBy(path <[$ ord]>) >> map(desc) >> (* '')
 
-   desc y
+   makeOl = values >> sortBy(path <[$ ord]>) >> map(desc) >> (* '')
 
    function desc x
       li = switch
@@ -20,5 +19,7 @@ build = (y) ->
          else ''
 
       li + ol
+
+   desc y
 
 export build
