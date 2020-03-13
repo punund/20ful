@@ -1,8 +1,12 @@
 <<<<<<< HEAD
+<<<<<<< HEAD
 <!--- ![](https://github.com/punund/20ful/workflows/publish-npmjs/badge.svg) -->
 =======
 ![](https://github.com/punund/20ful/workflows/publish-npmjs/badge.svg)
 >>>>>>> current item in TOC
+=======
+![](https://github.com/punund/20ful/workflows/publish-npmjs/badge.svg)
+>>>>>>> badge update
 
 # 20ful
 
