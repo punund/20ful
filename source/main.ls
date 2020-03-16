@@ -30,6 +30,9 @@ state =
 emptyLayout = src: \pug, dst: \html, body: '|!{body}'
 
 site = {}
+# hash of input files
+# "done" means: 1: read, 1.5: not html, 2: template compiled, 4: written
+
 
 tocc = onChange {}, !-> state.rescan = yes
 
@@ -140,9 +143,11 @@ processFile = (hsh) ->
                writeOne x, compiled
 
       .then ->
-         if allIn! and all ((.done) >> (> 1)), values site
+         log.warn state.rescan
+         if allIn! and (state.rescan or all ((.done) >> (> 1)), values site)
             Promise.all rebuild!
             .then ->
+               state.rescan = no
                if state.mode is '' and all (propEq \done, 4), values site
                   process.exit 0
                
@@ -170,9 +175,10 @@ rebuild = ->
    js = []
 
    writes = values site
-      |> filter (.done) >> (is 2)
+      |> filter ifElse always(state.rescan),
+         has \cpld
+         propEq \done, 2
       |> map (x) ->
-         # x.done = 3
          layoutName = x.attr.layout or \system
          layout = values site
             |> find pathEq <[attr template]>, layoutName
@@ -193,7 +199,7 @@ rebuild = ->
 #-------------------------------------------------
 theError = !->
    switch it?name
-      | \Error => log.error.bgMagenta it.message
+      | \Error => log.error.bgMagenta it
       | _      => log.error.red it
    process.exit 1
 

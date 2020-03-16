@@ -163,12 +163,14 @@
           });
         }
       }())).then(function(){
-        if (allIn() && all(compose$(function(it){
+        log.warn(state.rescan);
+        if (allIn() && (state.rescan || all(compose$(function(it){
           return it.done;
         }, (function(it){
           return it > 1;
-        })), values(site))) {
+        })), values(site)))) {
           return Promise.all(rebuild()).then(function(){
+            state.rescan = false;
             if (state.mode === '' && all(propEq('done', 4), values(site))) {
               return process.exit(0);
             }
@@ -220,17 +222,13 @@
         return layout.done = 4;
       });
     })(
-    filter(compose$(function(it){
-      return it.done;
-    }, (function(it){
-      return it === 2;
-    })))(
+    filter(ifElse(always(state.rescan), has('cpld'), propEq('done', 2)))(
     values(site)));
   };
   theError = function(it){
     switch (it != null && it.name) {
     case 'Error':
-      log.error.bgMagenta(it.message);
+      log.error.bgMagenta(it);
       break;
     default:
       log.error.red(it);

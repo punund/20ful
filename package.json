@@ -1,6 +1,6 @@
 {
   "name": "20ful",
-  "version": "0.1.4",
+  "version": "0.1.5",
   "description": "Static site generator",
   "engines": {
     "node": ">=13.5"
@@ -11,9 +11,9 @@
   },
   "main": "index.js",
   "scripts": {
-    "prepare": "lsc -k -co bin/ source/",
-    "pretest": "lsc -k -co bin/ source/",
-    "test": "lsc -kc test/ && ava --verbose"
+    "prepare": "npx lsc -k -co bin/ source/",
+    "pretest": "npx lsc -k -co bin/ source/",
+    "test": "npx lsc -kc test/ && ava --verbose"
   },
   "bin": "./cmd.js",
   "author": "Iļja Ketris",
@@ -38,6 +38,7 @@
     "ava": "^3.5.0"
   },
   "dependencies": {
+    "acorn": ">=5.7.4",
     "base58": "^2.0.1",
     "browser-sync": "^2.26.7",
     "chokidar": "^3.3.1",
@@ -50,12 +51,12 @@
     "mkdirp": "^1.0.3",
     "nunjucks": "^3.2.0",
     "ololog": "^1.1.155",
-    "on-change": "^1.6.4",
+    "on-change": "^2.0.0",
     "pug": "^2.0.4",
     "ramda": "^0.27.0",
-    "sass": "^1.26.2",
+    "sass": "^1.26.3",
     "string-hash": "^1.1.3",
     "stylus": "^0.54.7",
-    "yaml": "^1.8.0"
+    "yaml": "^1.8.2"
   }
 }
