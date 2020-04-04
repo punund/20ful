@@ -121,7 +121,6 @@
           return pj(dir0 != null ? dir0 : '', dirn, name + "" + bust + "." + dst);
         }
       }());
-      x.ping = true;
       tocEntry = attr.toc || attr.eleventyNavigation;
       if (dst === 'html') {
         if (tocEntry) {
@@ -208,7 +207,7 @@
     values(site))))));
     js = [];
     return writes = map(function(x){
-      var layoutName, layout, ref$;
+      var layoutName, layout, ref$, ref1$;
       layoutName = x.attr.layout || 'system';
       layout = (function(it){
         return it || emptyLayout;
@@ -217,7 +216,7 @@
       values(site)));
       return Compilers.compile(layout.dst, layout.src, layout.body, x.outfile, (ref$ = {}, import$(ref$, x.attr), ref$.body = x.cpld, ref$.toc = Toc.build({
         _: toc,
-        hsh: x.toc.hsh
+        hsh: (ref1$ = x.toc) != null ? ref1$.hsh : void 8
       }), ref$.css = css, ref$.js = js, ref$)).then(writeOne(x)).then(function(){
         return layout.done = 4;
       });

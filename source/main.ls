@@ -109,7 +109,6 @@ processFile = (hsh) ->
          | dir0 is \html => pj dirn, name
          | dst           => pj dir0 ? '', dirn, "#name#bust.#dst"
          
-      x <<< {+ping}
       tocEntry = attr.toc or attr.eleventyNavigation
       if dst is \html
          if tocEntry
@@ -143,7 +142,6 @@ processFile = (hsh) ->
                writeOne x, compiled
 
       .then ->
-         log.warn state.rescan
          if allIn! and (state.rescan or all ((.done) >> (> 1)), values site)
             Promise.all rebuild!
             .then ->
@@ -187,7 +185,7 @@ rebuild = ->
          Compilers.compile layout.dst, layout.src, layout.body, x.outfile, {
             ...x.attr
             body: x.cpld
-            toc: Toc.build _:toc, hsh: x.toc.hsh
+            toc: Toc.build _:toc, hsh: x.toc?hsh
             css: css
             js: js
             }
