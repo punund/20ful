@@ -39,7 +39,7 @@ args._.0 ?= \serve
 
 state = 
    rescan: no
-   filecount: 0
+   fileCount: 0
 
 emptyLayout = src: \pug, dst: \html, body: '|!{body}'
 
@@ -92,9 +92,9 @@ processFile = (hsh) ->
 
       fm = frontMatter it.toString!
       body = fm.body
-      attr = fm.attributes |> ifElse (.ignore), empty, identity
       # ---
       # ignore: true
+      attr = fm.attributes |> ifElse (.ignore), empty, identity
       
       bust = if attr.'bust-cache'
          then
@@ -209,6 +209,11 @@ theError = !->
 #-------------------------------------------------
 watcher.on \ready !->
 
+   if state.fileCount is 0
+      log.warn "“#{C.source}” is empty or doesn't exit"
+   else
+      log.info "found #{state.fileCount} files"
+
    switch args._.0
    | \serve
       bs.init files: C.outroot,
@@ -219,8 +224,6 @@ watcher.on \ready !->
          watch: yes
          proxy: {target: "http://localhost:#{args._.1}", +ws}
          }
-      log 'browser-watch started'
-
 
 #-------------------------------------------------
 watcher.on \all, (event, infile) !->

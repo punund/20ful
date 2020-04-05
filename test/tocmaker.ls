@@ -11,7 +11,6 @@ test ' makes TOC', ->>
          'abc'
 
    built = toc.build x
-   console.log built
    it.is built, """
 
       <ol><li><a href='/al1'>ak1</a>

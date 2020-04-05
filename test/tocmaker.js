@@ -25,7 +25,6 @@
       hsh: 'abc'
     };
     built = toc.build(x);
-    console.log(built);
     return it.is(built, "\n<ol><li><a href='/al1'>ak1</a>\n<li class=current-item>bk1\n</ol>\n");
   });
   function import$(obj, src){

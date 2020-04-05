@@ -38,7 +38,6 @@
     "ava": "^3.5.2"
   },
   "dependencies": {
-    "acorn": ">=5.7.4",
     "base58": "^2.0.1",
     "browser-sync": "^2.26.7",
     "chokidar": "^3.3.1",

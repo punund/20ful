@@ -37,7 +37,7 @@
   (ref$ = args._)[0] == null && (ref$[0] = 'serve');
   state = {
     rescan: false,
-    filecount: 0
+    fileCount: 0
   };
   emptyLayout = {
     src: 'pug',
@@ -226,6 +226,11 @@
     process.exit(1);
   };
   watcher.on('ready', function(){
+    if (state.fileCount === 0) {
+      log.warn("“" + C.source + "” is empty or doesn't exit");
+    } else {
+      log.info("found " + state.fileCount + " files");
+    }
     switch (args._[0]) {
     case 'serve':
       bs.init({
@@ -243,7 +248,6 @@
           ws: true
         }
       });
-      log('browser-watch started');
     }
   });
   watcher.on('all', function(event, infile){
