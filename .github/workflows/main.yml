@@ -1,7 +1,8 @@
 name: publish-npmjs
 
 on:
-  release: created
+  release:
+    types: [created]
 
 jobs:
   build:
