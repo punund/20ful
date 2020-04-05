@@ -22,10 +22,24 @@ require! \front-matter
 require! \on-change
 require! pug
 
+args = require('minimist') process.argv.slice(2), default: {+serve}
+if args.help
+   log '''
+
+   Commands:
+      build             compile and exit
+      watch             compile and watch for changes
+      serve             compile, watch, start local server (default)
+      proxy <port>      compile, watch, start local proxy on given port
+
+   '''
+   process.exit 0
+
+args._.0 ?= \serve
+
 state = 
    rescan: no
    filecount: 0
-   mode: ''
 
 emptyLayout = src: \pug, dst: \html, body: '|!{body}'
 
@@ -33,16 +47,7 @@ site = {}
 # hash of input files
 # "done" means: 1: read, 1.5: not html, 2: template compiled, 4: written
 
-
 tocc = onChange {}, !-> state.rescan = yes
-
-state.mode = switch process.argv[2]
-| \version
-   require(__dirname + '/../package.json') |> (.version) |> log
-   process.exit 0
-| \build => ''
-| \watch => 'w'
-| _      => 'bw'
 
 state.fileCount = length glob.sync C.source + '/**/*', {+nodir}
 
@@ -146,7 +151,7 @@ processFile = (hsh) ->
             Promise.all rebuild!
             .then ->
                state.rescan = no
-               if state.mode is '' and all (propEq \done, 4), values site
+               if args._.0 is \build and all (propEq \done, 4), values site
                   process.exit 0
                
 
@@ -204,11 +209,18 @@ theError = !->
 #-------------------------------------------------
 watcher.on \ready !->
 
-   unless state.mode.match /b/ => return
-   bs.init {
-      server: C.outroot
-      watch: C.outroot
-      }
+   switch args._.0
+   | \serve
+      bs.init files: C.outroot,
+         server: C.outroot
+   | \proxy
+      bs.init {
+         files: C.outroot
+         watch: yes
+         proxy: {target: "http://localhost:#{args._.1}", +ws}
+         }
+      log 'browser-watch started'
+
 
 #-------------------------------------------------
 watcher.on \all, (event, infile) !->

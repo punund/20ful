@@ -35,8 +35,17 @@ compiles your input files and exits
 `20ful watch`
 compiles your input files and watches for changes
 
-`20ful`
-all the above, and starts web browser
+`20ful serve`
+all the above, and starts static server, reloading it on change
+with browser-sync. This is the default.
+
+`20ful proxy <port>`
+starts HTTP proxy server instead and connects to given port.  This is useful
+if your site is not so static and you already have a server running.
+
+`20ful help`
+options overview
+
 
 ## What it does
 
