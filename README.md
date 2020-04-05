@@ -1,3 +1,4 @@
+![](https://img.shields.io/npm/v/20ful?style=plastic)
 ![](https://github.com/punund/20ful/workflows/publish-npmjs/badge.svg)
 
 # 20ful
