@@ -66,6 +66,7 @@ allDone = ->
 writeOne = (x, compiled) -->
    mkdirp Path.dirname x.outfile
    .then ->
+      x.done = 3
       fs.writeFile x.outfile, compiled
    .then ->
       log '→', x.outfile.magenta
@@ -133,8 +134,6 @@ processFile = (hsh) ->
       x <<< {outfile, body, dst, attr, link, src}
 
       Promise.resolve switch
-      | not x.attr
-         x.done = 4
       | x.attr.template
          x.done = 1.5
          log 'template'.red, x.infile.blue
@@ -195,7 +194,7 @@ rebuild = ->
             js: js
             }
 
-         .then writeOne x
+         .then writeOne
          .then ->
             layout.done = 4
 

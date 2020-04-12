@@ -62,6 +62,7 @@
   };
   writeOne = curry$(function(x, compiled){
     return mkdirp(Path.dirname(x.outfile)).then(function(){
+      x.done = 3;
       return fs.writeFile(x.outfile, compiled);
     }).then(function(){
       log('→', x.outfile.magenta);
@@ -138,8 +139,6 @@
       x.src = src;
       return Promise.resolve((function(){
         switch (false) {
-        case !!x.attr:
-          return x.done = 4;
         case !x.attr.template:
           x.done = 1.5;
           return log('template'.red, x.infile.blue);
@@ -208,7 +207,7 @@
       return Compilers.compile(layout.dst, layout.src, layout.body, x.outfile, (ref$ = {}, import$(ref$, x.attr), ref$.body = x.cpld, ref$.toc = Toc.build({
         _: toc,
         hsh: (ref1$ = x.toc) != null ? ref1$.hsh : void 8
-      }), ref$.css = css, ref$.js = js, ref$)).then(writeOne(x)).then(function(){
+      }), ref$.css = css, ref$.js = js, ref$)).then(writeOne).then(function(){
         return layout.done = 4;
       });
     })(
