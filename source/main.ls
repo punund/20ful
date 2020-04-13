@@ -99,6 +99,7 @@ processFile = (hsh) ->
       
       bust = if attr.'bust-cache'
          then
+            log 'bust-cache?'
             state.rescan = yes
             '-' + base58.int_to_base58 stringHash body
          else ''
@@ -147,9 +148,9 @@ processFile = (hsh) ->
 
       .then ->
          if allIn! and (state.rescan or all ((.done) >> (> 1)), values site)
+            state.rescan = no
             Promise.all rebuild!
             .then ->
-               state.rescan = no
                if args._.0 is \build and all (propEq \done, 4), values site
                   process.exit 0
                
@@ -181,6 +182,7 @@ rebuild = ->
          has \cpld
          propEq \done, 2
       |> map (x) ->
+         x.done = 3
          layoutName = x.attr.layout or \system
          layout = values site
             |> find pathEq <[attr template]>, layoutName
@@ -194,7 +196,7 @@ rebuild = ->
             js: js
             }
 
-         .then writeOne
+         .then writeOne x
          .then ->
             layout.done = 4
 

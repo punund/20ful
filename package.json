@@ -1,6 +1,6 @@
 {
   "name": "20ful",
-  "version": "0.1.72",
+  "version": "0.1.73",
   "description": "Static site generator",
   "engines": {
     "node": ">=13.5"

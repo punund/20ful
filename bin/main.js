@@ -90,7 +90,7 @@
         return it.ignore;
       }, empty, identity)(
       fm.attributes);
-      bust = attr['bust-cache'] ? (state.rescan = true, '-' + base58.int_to_base58(stringHash(body))) : '';
+      bust = attr['bust-cache'] ? (log('bust-cache?'), state.rescan = true, '-' + base58.int_to_base58(stringHash(body))) : '';
       pj = Path.join;
       outfile = (function(){
         switch (false) {
@@ -158,8 +158,8 @@
         }, (function(it){
           return it > 1;
         })), values(site)))) {
+          state.rescan = false;
           return Promise.all(rebuild()).then(function(){
-            state.rescan = false;
             if (args._[0] === 'build' && all(propEq('done', 4), values(site))) {
               return process.exit(0);
             }
@@ -198,6 +198,7 @@
     js = [];
     return writes = map(function(x){
       var layoutName, layout, ref$, ref1$;
+      x.done = 3;
       layoutName = x.attr.layout || 'system';
       layout = (function(it){
         return it || emptyLayout;
@@ -207,7 +208,7 @@
       return Compilers.compile(layout.dst, layout.src, layout.body, x.outfile, (ref$ = {}, import$(ref$, x.attr), ref$.body = x.cpld, ref$.toc = Toc.build({
         _: toc,
         hsh: (ref1$ = x.toc) != null ? ref1$.hsh : void 8
-      }), ref$.css = css, ref$.js = js, ref$)).then(writeOne).then(function(){
+      }), ref$.css = css, ref$.js = js, ref$)).then(writeOne(x)).then(function(){
         return layout.done = 4;
       });
     })(
