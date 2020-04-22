@@ -40,6 +40,7 @@ if args.help
    process.exit 0
 
 args._.0 ?= \serve
+args.port ?= 3000
 
 state = 
    rescan: no
@@ -236,6 +237,7 @@ watcher.on \ready !->
          server: C.outroot
    | \proxy
       bs.init {
+         port: args.port
          files: C.outroot
          watch: yes
          proxy: {target: "http://localhost:#{args._.1}", +ws}

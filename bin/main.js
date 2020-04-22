@@ -36,6 +36,7 @@
     process.exit(0);
   }
   (ref$ = args._)[0] == null && (ref$[0] = 'serve');
+  args.port == null && (args.port = 3000);
   state = {
     rescan: false,
     fileCount: 0
@@ -254,6 +255,7 @@
       break;
     case 'proxy':
       bs.init({
+        port: args.port,
         files: C.outroot,
         watch: true,
         proxy: {
