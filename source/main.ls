@@ -13,7 +13,8 @@ require! path: Path # because of ramda
 require! mkdirp
 require! glob
 require! \string-hash
-require! \base58
+require! base58
+require! isbinaryfile
 
 bs = require('browser-sync').create!
 
@@ -30,7 +31,10 @@ if args.help
       build             compile and exit
       watch             compile and watch for changes
       serve             compile, watch, start local server (default)
-      proxy <port>      compile, watch, start local proxy on given port
+      proxy <port>      compile, watch, start proxy server from given port
+      
+   Options:
+      --port <number>   server port to listen (default 3000)
 
    '''
    process.exit 0
@@ -47,7 +51,8 @@ site = {}
 # hash of input files
 # "done" means: 1: read, 1.5: not html, 2: template compiled, 4: written
 
-tocc = onChange {}, !-> state.rescan = yes
+tocc = onChange {}, !->
+   state.rescan = yes
 
 state.fileCount = length glob.sync C.source + '/**/*', {+nodir}
 
@@ -79,9 +84,18 @@ processFile = (hsh) ->
    x = site[hsh]
    
    {dir, base, ext, name} = Path.parse x.infile
-   
    [, dir0, ...dirs] = split '/', dir
    dirn = (dirs * '/') or ''
+
+   if isbinaryfile.isBinaryFileSync x.infile
+      outfile = Path.join C.outroot, dir0 ? '', dirn, base
+      mkdirp Path.dirname outfile
+      .then ->
+         fs.copyFile x.infile, outfile
+      .then ->
+         log '░', outfile.cyan
+         x.done = 4
+      return
 
    fs.readFile x.infile
    .then ->  # read file
@@ -118,16 +132,16 @@ processFile = (hsh) ->
          
       tocEntry = attr.toc or attr.eleventyNavigation
       if dst is \html
-         if tocEntry
-            then
-               tocc.{}[hsh] <<< tocEntry
-               x.toc = 
-                  key: tocEntry.key
-                  ord: tocEntry.order
-                  lnk: link
-                  hsh: hsh
-            else
-               tocc.{}[hsh] = {}
+         switch
+         | tocEntry
+            tocc.{}[hsh] <<< tocEntry
+            x.toc = 
+               key: tocEntry.key
+               ord: tocEntry.order
+               lnk: link
+               hsh: hsh
+         | tocc[hsh]
+            tocc[hsh] = {}
 
       delete! attr.toc
       delete! attr.eleventyNavigation
@@ -138,6 +152,7 @@ processFile = (hsh) ->
       | x.attr.template
          x.done = 1.5
          log 'template'.red, x.infile.blue
+         state.rescan = yes
       | _
          Compilers.compile dst, src, body, outfile
          .then (compiled) ->
@@ -148,8 +163,7 @@ processFile = (hsh) ->
 
       .then ->
          if allIn! and (state.rescan or all ((.done) >> (> 1)), values site)
-            state.rescan = no
-            Promise.all rebuild!
+            Promise.all rebuild state.rescan
             .then ->
                if args._.0 is \build and all (propEq \done, 4), values site
                   process.exit 0
@@ -158,7 +172,8 @@ processFile = (hsh) ->
    .catch theError
 
 #-------------------------------------------------
-rebuild = ->
+rebuild = (rescan) ->
+   state.rescan = no
    toc = values site
       |> filter (.toc)
       |> map (x) ->
@@ -178,7 +193,7 @@ rebuild = ->
    js = []
 
    writes = values site
-      |> filter ifElse always(state.rescan),
+      |> filter ifElse always(rescan),
          has \cpld
          propEq \done, 2
       |> map (x) ->
@@ -203,7 +218,7 @@ rebuild = ->
 #-------------------------------------------------
 theError = !->
    switch it?name
-      | \Error => log.error.bgMagenta it
+      | \Error => log.error.yellow it
       | _      => log.error.red it
    process.exit 1
 
@@ -237,7 +252,8 @@ watcher.on \all, (event, infile) !->
          ++state.fileCount
       fallthrough
    | \change
-      site[hash] = {infile, done: 1}
+      bin = isbinaryfile.isBinaryFileSync infile
+      site[hash] = {infile, done: 1, bin}
       processFile hash
    | \unlink
       --state.fileCount
