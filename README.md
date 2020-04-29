@@ -41,10 +41,12 @@ with browser-sync. This is the default.
 
 `20ful proxy <port>`
 starts HTTP proxy server instead and connects to given port.  This is useful
-if your site is not so static and you already have a server running.
+if your site is not so static and you already have a server running, but 
+would like to watch for changes of the front end files.
 
-`20ful help`
-options overview
+#### --port
+
+Port to listen on in `server` or `proxy` mode.  Default is 3000.
 
 
 ## What it does
@@ -57,26 +59,24 @@ writes them out.
 Put all your stuff in `src/`. It will get compiled and placed into
 `_site/`, preserving directory structure.  Dot files are ignored.
 
-    src/server-config        → \_site/server-config
-    src/assets/css/main.styl → \_site/assets/css/main.css
-    src/html/.git/           → (ignored)
-
 Folder `src/html/` is special, the "html" part will be stripped in the resulting
 path, and for files compiled to HTML file name is made a folder, and the content
-is placed in `index.html` in it:
+is placed in `index.html` in it.
 
-    src/html/mypage.md       → \_site/mypage/index.html
-
-The reason is that sometimes hosters want you to put extra stuff in the site's
-root, and it's better to keep it separate from your pages.
+| source | destination |
+| ---    | --- |
+| src/server-config        | _site/server-config |
+| src/assets/css/main.styl | _site/assets/css/main.css |
+| src/html/.git/           | *ignored* |
+| src/html/mypage.md       | _site/mypage/index.html |
 
 This also means that if you create two files whose pathnames are different only
-in `html/` part, only one of them will get to the output location, so don't do
-that.
+in `html/` part, only one of them will make it to the output location, so don't
+do that.
 
 ## Conversions
 
-The generator natively supports following conversions:
+The generator natively supports the following conversions:
 * for HTML: Markdown (`.md`), Pug (`.pug`), Nunjucks (`.njk`)
 * for CSS: Stylus (`.styl`), Sass (`.scss`, `.sass`)
 * for JavaScript: LiveScript (`.ls`)
@@ -84,16 +84,16 @@ The generator natively supports following conversions:
 File type is determined by its suffix.  All other files are copied as is to
 their destinations, including plain HTML, CSS, and JavasScript.
 
-Any file can have YAML-formatted front matter (FM), which is stripped after
-processing.  Some behavior is defined by the front matter data.
+Any file can have YAML-formatted, `---` delimited front matter (FM), which is
+stripped after processing.  Some behavior is defined by the front matter data.
 
 ## Front matter attributes
 
-### template: *name*
+### template: _string_
 
-The file is a template, normally `pug` or `njk`. There is no designated location
-to store your templates, as long as they are within `src`, nor there are any
-particular filenames that you must give them. The following template
+The file is a named template, normally `pug` or `njk`. There is no designated
+location to store your templates, as long as they are within `src`, nor there
+are any particular filenames that you must give them. The following template
 variables are special:
 
 #### body
@@ -114,7 +114,7 @@ All special variables contain HTML and therefore must be passed in unsafe mode.
 Default template `system` is always present, and just renders the body, so you
 may want to name your first template "system".
 
-### layout: _name_
+### layout: _string_
 
 The file is rendered using the named template. Possible values:
 
@@ -127,10 +127,10 @@ template "system" is used
 
 ### index: _boolean_
 
-If set to true, this file is written to top-level `index.html` in the output
+If set to `true`, this file is written to top-level `index.html` in the output
 direcory.
 
-### toc:
+### toc: _object_
 
 Object, describing a table of content entry. Its attributes:
 
@@ -155,11 +155,11 @@ will render to an ordered list: `<ol><li><a href='/'>My cool stories</a...`
 
 ### bust-cache: _boolean_
 
-If set to "true", enables cache busting for this CSS or JS file. Cache busting
-of CSS and JS assets is done by automatically adding a hash suffix to the
-filename, changing as the file content changes.  Template variables `css` and
-`js` will have the whole sequences of `<link>` and `<script>` attributes which
-you need to pass verbatim to templates.
+If set to `true`, enables cache busting for this CSS or JS file. Cache busting
+is done by automatically adding a hash suffix to the filename, changing as the
+file content changes.  Template variables `css` and `js` will have the whole
+sequences of `<link>` and `<script>` attributes which you need to pass verbatim
+to templates.
 
 For all files that compile to CSS `css` variable stores a sequence of `link`
 tags:
@@ -176,6 +176,18 @@ In a pug template, put `| !{css}` and `| !{js}` within the head.
 ### order: _number_
 
 This controls the order of tags within cache-busted `css` and `js` variables.
+
+### options: _object_
+
+Options to pass to the compiler, e.g. `main.ls` may look:
+
+    ---
+    options:
+       bare: true
+    ---
+    f = a >> b
+
+and LiveScript won't generate top-lever wrapper.
 
 ### ignore: _boolean_
 
@@ -198,7 +210,7 @@ markdown-it-plugins:
 ```
 
 Markdown-it-plugins are what they appear to be. To add a markdown-it plugin:
-* `npm install markdown-it-plugin-name`
+* install `markdown-it-plugin-<name>`
 * mention it in the config (`false` to disable)
 
 If the plugin takes options, give them as sub-keys.

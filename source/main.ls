@@ -155,11 +155,13 @@ processFile = (hsh) ->
          log 'template'.red, x.infile.blue
          state.rescan = yes
       | _
-         Compilers.compile dst, src, body, outfile
+         Compilers.compile dst, src, body, outfile, attr.options
          .then (compiled) ->
             | x.dst is \html and x.attr.layout isnt \none
                x <<< cpld: compiled, done: 2
             | _
+               # if dst is 'css'
+               #    console.log src, compiled
                writeOne x, compiled
 
       .then ->

@@ -157,7 +157,7 @@
           log('template'.red, x.infile.blue);
           return state.rescan = true;
         default:
-          return Compilers.compile(dst, src, body, outfile).then(function(compiled){
+          return Compilers.compile(dst, src, body, outfile, attr.options).then(function(compiled){
             switch (false) {
             case !(x.dst === 'html' && x.attr.layout !== 'none'):
               return x.cpld = compiled, x.done = 2, x;
