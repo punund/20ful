@@ -11,9 +11,10 @@
   },
   "main": "index.js",
   "scripts": {
-    "prepare": "node_modules/.bin/lsc -k -co bin/ source/",
+    "prepare": "npm run snyk-protect && node_modules/.bin/lsc -k -co bin/ source/",
     "pretest": "node_modules/.bin/lsc -k -co bin source",
-    "test": "npx lsc -kc test/ && ava --verbose"
+    "test": "npx lsc -kc test/ && ava --verbose",
+    "snyk-protect": "snyk protect"
   },
   "bin": "./cmd.js",
   "author": "Iļja Ketris",
@@ -64,11 +65,13 @@
     "pug": "^2.0.4",
     "ramda": "^0.27.0",
     "string-hash": "^1.1.3",
-    "yaml": "^1.8.3"
+    "yaml": "^1.8.3",
+    "snyk": "^1.316.1"
   },
   "resolutiuons": {
     "minimist": "^1.2.5",
     "acorn": ">=5.7.4",
     "mkdirp": "^1.0.3"
-  }
+  },
+  "snyk": true
 }
