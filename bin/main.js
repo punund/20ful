@@ -248,9 +248,9 @@
     switch (args._[0]) {
     case 'serve':
       bs.init({
-        files: C.outroot
-      }, {
-        server: C.outroot
+        files: C.outroot,
+        server: C.outroot,
+        watch: true
       });
       break;
     case 'proxy':

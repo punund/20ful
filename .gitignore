@@ -3,3 +3,4 @@ _site
 tmp
 nodemon.json
 example/_site
+pnpm-*

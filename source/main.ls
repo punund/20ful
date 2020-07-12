@@ -235,8 +235,11 @@ watcher.on \ready !->
 
    switch args._.0
    | \serve
-      bs.init files: C.outroot,
+      bs.init {
+         files: C.outroot
          server: C.outroot
+         watch: yes
+         }
    | \proxy
       bs.init {
          port: args.port
