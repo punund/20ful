@@ -72,7 +72,6 @@ allDone = ->
 writeOne = (x, compiled) -->
    mkdirp Path.dirname x.outfile
    .then ->
-      x.done = 3
       fs.writeFile x.outfile, compiled
    .then ->
       log '→', x.outfile.magenta
@@ -114,7 +113,7 @@ processFile = (hsh) ->
       
       bust = if attr.'bust-cache'
          then
-            log 'bust-cache?'
+            log 'bust-cache:', x.infile.blue
             state.rescan = yes
             '-' + base58.int_to_base58 stringHash body
          else ''
@@ -177,7 +176,9 @@ processFile = (hsh) ->
 #-------------------------------------------------
 rebuild = (rescan) ->
    state.rescan = no
-   toc = values site
+   valuesSite = values site
+
+   toc = valuesSite
       |> filter (.toc)
       |> map (x) ->
          x.link
@@ -186,7 +187,7 @@ rebuild = (rescan) ->
             |> assocPath __, $: x.toc, {}
       |> reduce mergeDeepRight, {}
 
-   css = values site
+   css = valuesSite
       |> filter propEq \dst, \css
       |> filter (.attr.'bust-cache')
       |> sortBy (.attr.order)
@@ -195,14 +196,13 @@ rebuild = (rescan) ->
       
    js = []
 
-   writes = values site
+   writes = valuesSite
       |> filter ifElse always(rescan),
          has \cpld
          propEq \done, 2
       |> map (x) ->
-         x.done = 3
          layoutName = x.attr.layout or \system
-         layout = values site
+         layout = valuesSite
             |> find pathEq <[attr template]>, layoutName
             |> (or emptyLayout)
 
@@ -214,7 +214,10 @@ rebuild = (rescan) ->
             js: js
             }
 
-         .then writeOne x
+         .then (c) ->
+            unless x.done > 2
+               x.done = 3
+               writeOne x, c
          .then ->
             layout.done = 4
 

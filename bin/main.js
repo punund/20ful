@@ -64,7 +64,6 @@
   };
   writeOne = curry$(function(x, compiled){
     return mkdirp(Path.dirname(x.outfile)).then(function(){
-      x.done = 3;
       return fs.writeFile(x.outfile, compiled);
     }).then(function(){
       log('→', x.outfile.magenta);
@@ -102,7 +101,7 @@
         return it.ignore;
       }, empty, identity)(
       fm.attributes);
-      bust = attr['bust-cache'] ? (log('bust-cache?'), state.rescan = true, '-' + base58.int_to_base58(stringHash(body))) : '';
+      bust = attr['bust-cache'] ? (log('bust-cache:', x.infile.blue), state.rescan = true, '-' + base58.int_to_base58(stringHash(body))) : '';
       pj = Path.join;
       outfile = (function(){
         switch (false) {
@@ -182,8 +181,9 @@
     })['catch'](theError);
   };
   rebuild = function(rescan){
-    var toc, css, js, writes;
+    var valuesSite, toc, css, js, writes;
     state.rescan = false;
+    valuesSite = values(site);
     toc = reduce(mergeDeepRight, {})(
     map(function(x){
       return assocPath(__, {
@@ -196,7 +196,7 @@
     filter(function(it){
       return it.toc;
     })(
-    values(site))));
+    valuesSite)));
     css = join('')(
     map(function(it){
       return "<link rel=stylesheet href='/" + it.link + "'>";
@@ -208,26 +208,30 @@
       return it.attr['bust-cache'];
     })(
     filter(propEq('dst', 'css'))(
-    values(site))))));
+    valuesSite)))));
     js = [];
     return writes = map(function(x){
       var layoutName, layout, ref$, ref1$;
-      x.done = 3;
       layoutName = x.attr.layout || 'system';
       layout = (function(it){
         return it || emptyLayout;
       })(
       find(pathEq(['attr', 'template'], layoutName))(
-      values(site)));
+      valuesSite));
       return Compilers.compile(layout.dst, layout.src, layout.body, x.outfile, (ref$ = {}, import$(ref$, x.attr), ref$.body = x.cpld, ref$.toc = Toc.build({
         _: toc,
         hsh: (ref1$ = x.toc) != null ? ref1$.hsh : void 8
-      }), ref$.css = css, ref$.js = js, ref$)).then(writeOne(x)).then(function(){
+      }), ref$.css = css, ref$.js = js, ref$)).then(function(c){
+        if (!(x.done > 2)) {
+          x.done = 3;
+          return writeOne(x, c);
+        }
+      }).then(function(){
         return layout.done = 4;
       });
     })(
     filter(ifElse(always(rescan), has('cpld'), propEq('done', 2)))(
-    values(site)));
+    valuesSite));
   };
   theError = function(it){
     switch (it != null && it.name) {
