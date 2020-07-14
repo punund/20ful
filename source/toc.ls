@@ -2,6 +2,7 @@
 build = (y) ->
 
    hsh = y.hsh
+   # log y
 
    makeOl = values >> sortBy(path <[$ ord]>) >> map(desc) >> (* '')
 

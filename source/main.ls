@@ -43,7 +43,6 @@ args._.0 ?= \serve
 args.port ?= 3000
 
 state = 
-   rescan: no
    fileCount: 0
 
 emptyLayout = src: \pug, dst: \html, body: '|!{body}'
@@ -51,9 +50,6 @@ emptyLayout = src: \pug, dst: \html, body: '|!{body}'
 site = {}
 # hash of input files
 # "done" means: 1: read, 1.5: not html, 2: template compiled, 4: written
-
-tocc = onChange {}, !->
-   state.rescan = yes
 
 state.fileCount = length glob.sync C.source + '/**/*', {+nodir}
 
@@ -114,7 +110,6 @@ processFile = (hsh) ->
       bust = if attr.'bust-cache'
          then
             log 'bust-cache:', x.infile.blue
-            state.rescan = yes
             '-' + base58.int_to_base58 stringHash body
          else ''
          
@@ -134,14 +129,11 @@ processFile = (hsh) ->
       if dst is \html
          switch
          | tocEntry
-            tocc.{}[hsh] <<< tocEntry
             x.toc = 
                key: tocEntry.key
                ord: tocEntry.order
                lnk: link
                hsh: hsh
-         | tocc[hsh]
-            tocc[hsh] = {}
 
       delete! attr.toc
       delete! attr.eleventyNavigation
@@ -152,20 +144,17 @@ processFile = (hsh) ->
       | x.attr.template
          x.done = 1.5
          log 'template'.red, x.infile.blue
-         state.rescan = yes
       | _
          Compilers.compile dst, src, body, outfile, attr.options
          .then (compiled) ->
             | x.dst is \html and x.attr.layout isnt \none
                x <<< cpld: compiled, done: 2
             | _
-               # if dst is 'css'
-               #    console.log src, compiled
                writeOne x, compiled
 
       .then ->
-         if allIn! and (state.rescan or all ((.done) >> (> 1)), values site)
-            Promise.all rebuild state.rescan
+         if allIn! and (all ((.done) >> (> 1)), values site)
+            Promise.all rebuild!
             .then ->
                if args._.0 is \build and all (propEq \done, 4), values site
                   process.exit 0
@@ -174,8 +163,7 @@ processFile = (hsh) ->
    .catch theError
 
 #-------------------------------------------------
-rebuild = (rescan) ->
-   state.rescan = no
+rebuild = ->
    valuesSite = values site
 
    toc = valuesSite
@@ -197,7 +185,7 @@ rebuild = (rescan) ->
    js = []
 
    writes = valuesSite
-      |> filter ifElse always(rescan),
+      |> filter ifElse always(no),
          has \cpld
          propEq \done, 2
       |> map (x) ->
@@ -268,7 +256,6 @@ watcher.on \all, (event, infile) !->
    | \unlink
       --state.fileCount
       fs.unlink site[hash]outfile
-      delete tocc[hash]
       delete site[hash]
    | _
       return
