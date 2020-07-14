@@ -39,7 +39,7 @@ if args.help
    '''
    process.exit 0
 
-args._.0 ?= \serve
+args._.0  ?= \serve
 args.port ?= 3000
 
 state = 
@@ -57,12 +57,7 @@ watcher = chokidar.watch C.source, ignored: /(^|[\/\\])\../
 
 #-------------------------------------------------
 allIn = ->
-   # log state.fileCount, length keys site
    state.fileCount is length keys site
-
-#-------------------------------------------------
-allDone = ->
-   state.fileCount == length keys filter (prop it), site
 
 #-------------------------------------------------
 writeOne = (x, compiled) -->

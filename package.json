@@ -1,9 +1,12 @@
 {
    "name": "20ful",
-   "version": "0.2.3",
+   "version": "0.2.4",
    "description": "Static site generator",
    "engines": {
       "node": ">=13.5"
+   },
+   "publishConfig": {
+      "registry": "https://npm.pkg.github.com/"
    },
    "repository": {
       "type": "git",
