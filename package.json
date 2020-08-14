@@ -63,7 +63,7 @@
       "markdown-it-multimd-table": "^4.0.3",
       "minimist": "^1.2.5",
       "mkdirp": "^1.0.4",
-      "ololog": "^1.1.156",
+      "ololog": "^1.1.157",
       "on-change": "^2.0.1",
       "pug": "^3.0.0",
       "ramda": "^0.27.0",
