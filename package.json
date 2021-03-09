@@ -54,7 +54,7 @@
       "jstransformer-livescript": "^1.2.0",
       "jstransformer-markdown-it": "^2.1.0",
       "jstransformer-nunjucks": "^1.0.0",
-      "jstransformer-pug": "^0.3.0",
+      "jstransformer-pug": "^0.4.0",
       "jstransformer-sass": "^1.0.0",
       "jstransformer-scss": "^1.0.0",
       "jstransformer-stylus": "^1.5.0",
