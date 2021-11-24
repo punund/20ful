@@ -1,11 +1,8 @@
 {
    "name": "20ful",
-   "version": "0.2.8",
+   "version": "0.2.9",
    "description": "Static site generator",
-   "engines": {
-      "node": ">=13.5"
-   },
-   ":publishConfig": {
+   "publishConfig": {
       "registry": "https://npm.pkg.github.com/"
    },
    "repository": {
@@ -15,7 +12,7 @@
    "main": "index.js",
    "scripts": {
       "compile": "node_modules/.bin/lsc -k -co bin/ source/",
-      "prepare": "npm run snyk-protect && node_modules/.bin/lsc -k -co bin/ source/",
+      "prepare": "node_modules/.bin/lsc -k -co bin/ source/",
       "pretest": "node_modules/.bin/lsc -k -co bin source",
       "test": "npx lsc -kc test/ && ava --verbose",
       "snyk-protect": "snyk protect"
@@ -55,8 +52,6 @@
       "jstransformer-markdown-it": "^2.1.0",
       "jstransformer-nunjucks": "^1.0.0",
       "jstransformer-pug": "^0.4.0",
-      "jstransformer-sass": "^1.0.0",
-      "jstransformer-scss": "^1.0.0",
       "jstransformer-stylus": "^1.5.0",
       "markdown-it": "^12.0.4",
       "markdown-it-mark": "^3.0.1",
