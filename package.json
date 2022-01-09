@@ -53,7 +53,7 @@
       "jstransformer-nunjucks": "^1.0.0",
       "jstransformer-pug": "^0.4.0",
       "jstransformer-stylus": "^1.5.0",
-      "markdown-it": "^12.0.4",
+      "markdown-it": "^12.3.2",
       "markdown-it-mark": "^3.0.1",
       "markdown-it-multimd-table": "^4.0.3",
       "minimist": "^1.2.5",
