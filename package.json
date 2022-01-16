@@ -55,7 +55,7 @@
       "jstransformer-stylus": "^1.5.0",
       "markdown-it": "^12.0.4",
       "markdown-it-mark": "^3.0.1",
-      "markdown-it-multimd-table": "^4.0.3",
+      "markdown-it-multimd-table": "^4.1.2",
       "minimist": "^1.2.5",
       "mkdirp": "^1.0.4",
       "ololog": "^1.1.168",
