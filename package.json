@@ -56,7 +56,7 @@
       "markdown-it": "^12.0.4",
       "markdown-it-mark": "^3.0.1",
       "markdown-it-multimd-table": "^4.0.3",
-      "minimist": "^1.2.5",
+      "minimist": "^1.2.6",
       "mkdirp": "^1.0.4",
       "ololog": "^1.1.168",
       "on-change": "^2.2.3",
