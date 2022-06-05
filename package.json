@@ -1,9 +1,9 @@
 {
    "name": "@punund/20ful",
-   "version": "0.3.2-0",
+   "version": "0.3.2-1",
    "description": "Static site generator",
    "publishConfig": {
-      "registry": "https://npm.pkg.github.com/"
+      "registry": "https://registry.npmjs.org/"
    },
    "repository": {
       "type": "git",
