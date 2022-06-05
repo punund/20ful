@@ -1,19 +1,19 @@
 require! './config': C
-require! fs
+require! \fs
 require(\ansicolor).nice
 log = (require 'ololog').configure {+tag, -locate}
-require! jstransformer
-
-trns = {styl: \stylus, sass: \sass, scss: \scss}
-   |> map (k) -> ->
-      jstransformer require "jstransformer-#{k}"
-      .renderAsync &0, {filename: &1}
-      .then prop \body
+require! \jstransformer
+require! \sass
 
 render = (compiler, text, options = {}, locals = {}) ->
-   jstransformer require "jstransformer-#compiler"
-   .renderAsync text, options, locals
-   .then prop \body
+   Promise.resolve().then ->
+      jstransformer require "jstransformer-#compiler"
+      .renderAsync text, options, locals
+   .then (.body)
+   .catch ->
+      log.error 'Missing module.'
+      log "Install jstransformer-#compiler".lightGreen
+      process.exit 1
 
 #--------------------------------------------
 filters =
@@ -44,7 +44,13 @@ formats =
       ls: ->
          render \livescript, &0, {filename: &1, ...&2}
 
-   css: trns
+   css:
+      styl: ->
+         render \stylus, &0, {filename: &1}
+      sass: ->
+         sass.compileString &0, {+indented} |> prop \css
+      scss: ->
+         sass.compileString &0 |> (.css)
 
    html:
       md: ->

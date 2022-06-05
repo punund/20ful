@@ -1,6 +1,6 @@
 {
    "name": "20ful",
-   "version": "0.2.9",
+   "version": "0.3.0",
    "description": "Static site generator",
    "publishConfig": {
       "registry": "https://npm.pkg.github.com/"
@@ -31,40 +31,42 @@
       "markdown",
       "stylus",
       "sass",
+      "scss",
       "pug"
    ],
    "contributors": [],
    "bugs": "https://github.com/punund/20ful.git/issues",
    "homepage": "https://github.com/punund/20ful.git",
    "devDependencies": {
-      "ava": "^3.15.0",
+      "ava": "^4.3.0",
       "livescript": "^1.6.0"
    },
    "dependencies": {
-      "ansicolor": "^1.1.93",
+      "ansicolor": "^1.1.100",
       "base58": "^2.0.1",
       "browser-sync": "^2.26.14",
       "front-matter": "^4.0.2",
-      "glob": "^7.1.6",
-      "isbinaryfile": "^4.0.6",
+      "glob": "^8.0.3",
+      "isbinaryfile": "^5.0.0",
       "jstransformer": "^1.0.0",
       "jstransformer-livescript": "^1.2.0",
       "jstransformer-markdown-it": "^2.1.0",
       "jstransformer-nunjucks": "^1.0.0",
       "jstransformer-pug": "^0.4.0",
       "jstransformer-stylus": "^1.5.0",
-      "markdown-it": "^12.0.4",
+      "markdown-it": "^13.0.1",
       "markdown-it-mark": "^3.0.1",
-      "markdown-it-multimd-table": "^4.0.3",
-      "minimist": "^1.2.5",
+      "markdown-it-multimd-table": "^4.1.3",
+      "minimist": "^1.2.6",
       "mkdirp": "^1.0.4",
       "ololog": "^1.1.168",
-      "on-change": "^2.2.3",
       "pug": "^3.0.2",
-      "ramda": "^0.27.1",
+      "ramda": "^0.28.0",
+      "sass": "^1.52.2",
+      "sass.js": "^0.11.1",
       "snyk": "^1.479.0",
       "string-hash": "^1.1.3",
-      "yaml": "^1.10.0"
+      "yaml": "^2.1.1"
    },
    "resolutiuons": {
       "minimist": "^1.2.5",

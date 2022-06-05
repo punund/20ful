@@ -10,18 +10,17 @@ require! './toc': Toc
 require(\ansicolor).nice
 fs = require('fs').promises
 require! path: Path # because of ramda
-require! mkdirp
-require! glob
+require! \mkdirp
+require! \glob
 require! \string-hash
-require! base58
-require! isbinaryfile
+require! \base58
+require! \isbinaryfile
 
 bs = require('browser-sync').create!
 
-require! chokidar
+require! \chokidar
 require! \front-matter
-require! \on-change
-require! pug
+require! \pug
 
 args = require('minimist') process.argv.slice(2), default: {+serve}
 if args.help
@@ -215,7 +214,9 @@ theError = !->
 watcher.on \ready !->
 
    if state.fileCount is 0
-      log.warn "“#{C.source}” is empty or doesn't exit"
+      log.error "
+         “#{C.source}/” is empty or doesn't exit. Create it and populate."
+      process.exit 1
    else
       log.info "found #{state.fileCount} files"
 

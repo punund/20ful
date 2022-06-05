@@ -27,6 +27,11 @@ $ 20ful
 
 You can also check the [example project](https://github.com/punund/20ful-example).
 
+## What it does
+
+The generator takes in your input files, possibly applies conversions, and
+writes them out, optionally starting a static web server for development.
+
 ## Running and command line options
 
 `20ful build`
@@ -46,13 +51,7 @@ would like to watch for changes of the front end files.
 
 #### --port
 
-Port to listen on in `server` or `proxy` mode.  Default is 3000.
-
-
-## What it does
-
-The generator takes in your input files, possibly applies conversions, and
-writes them out.
+Port to listen on in `serve` or `proxy` mode.  The default is 3000.
 
 ## Directory structure
 
@@ -82,9 +81,9 @@ The generator natively supports the following conversions:
 * for JavaScript: LiveScript (`.ls`)
 
 File type is determined by its suffix.  All other files are copied as is to
-their destinations, including plain HTML, CSS, and JavasScript.
+their destinations, including plain HTML, CSS, JavaScript, binary files, etc.
 
-Any file can have YAML-formatted, `---` delimited front matter (FM), which is
+Any file can have YAML-formatted, "`---`" delimited front matter (FM), which is
 stripped after processing.  Some behavior is defined by the front matter data.
 
 ## Front matter attributes
@@ -112,7 +111,7 @@ Set of `<script>` attributes referring to JS files, if cache busting is enabled.
 
 All special variables contain HTML and therefore must be passed in unsafe mode.
 Default template `system` is always present, and just renders the body, so you
-may want to name your first template "system".
+may want to name your first template "system" to override it.
 
 ### layout: _string_
 
