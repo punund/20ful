@@ -1,6 +1,6 @@
 {
    "name": "20ful",
-   "version": "0.3.0",
+   "version": "0.3.1",
    "description": "Static site generator",
    "publishConfig": {
       "registry": "https://npm.pkg.github.com/"
@@ -37,7 +37,11 @@
    "contributors": [],
    "bugs": "https://github.com/punund/20ful.git/issues",
    "homepage": "https://github.com/punund/20ful.git",
-   "devDependencies": {
+   "engines" : { 
+      "npm" : ">=8.0.0",
+      "node" : ">=16.0.0"
+    },
+    "devDependencies": {
       "ava": "^4.3.0",
       "livescript": "^1.6.0"
    },
