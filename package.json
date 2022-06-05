@@ -1,5 +1,5 @@
 {
-   "name": "20ful",
+   "name": "@punund/20ful",
    "version": "0.3.1",
    "description": "Static site generator",
    "publishConfig": {
