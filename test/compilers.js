@@ -22,6 +22,11 @@
     compiled = (await compilers.compile('css', 'styl', "p\n  color red", 'file'));
     return it.is(compiled, 'p {\n  color: #f00;\n}\n');
   });
+  test(' compile SASS', async function(it){
+    var compiled;
+    compiled = (await compilers.compile('css', 'sass', "$base: red\np\n  color: $base"));
+    return it.is(compiled, 'p {\n  color: red;\n}');
+  });
   test(' compile SCSS', async function(it){
     var compiled;
     compiled = (await compilers.compile('css', 'scss', "$base: red;\np {color: $base;}"));

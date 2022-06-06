@@ -48,7 +48,7 @@ formats =
       styl: ->
          render \stylus, &0, {filename: &1}
       sass: ->
-         sass.compileString &0, {+indented} |> prop \css
+         sass.compileString &0, {syntax: \indented} |> prop \css
       scss: ->
          sass.compileString &0 |> (.css)
 

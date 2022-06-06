@@ -4,3 +4,5 @@ tmp
 nodemon.json
 example/_site
 pnpm-*
+.npmrc
+

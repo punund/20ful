@@ -71,7 +71,7 @@
       sass: function(){
         return prop('css')(
         sass.compileString(arguments[0], {
-          indented: true
+          syntax: 'indented'
         }));
       },
       scss: function(){

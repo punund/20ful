@@ -14,12 +14,12 @@ test ' compile Stylus', ->>
    compiled = await compilers.compile(\css, \styl, "p\n  color red", \file)
    it.is compiled, 'p {\n  color: #f00;\n}\n'
 
-# test ' compile SASS', ->>
-#    compiled = await compilers.compile \css, \sass, """
-#    $base: red;
-#    p
-#      color: $base"""
-#    it.is compiled, 'p {\n  color: red;\n}'
+test ' compile SASS', ->>
+   compiled = await compilers.compile \css, \sass, """
+   $base: red
+   p
+     color: $base"""
+   it.is compiled, 'p {\n  color: red;\n}'
 
 test ' compile SCSS', ->>
    compiled = await compilers.compile \css, \scss, """
