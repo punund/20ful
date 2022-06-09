@@ -180,22 +180,26 @@ This controls the order of tags within cache-busted `css` and `js` variables.
 
 ### options: _object_
 
-Options to pass to the compiler, examples:
+Options to pass to the compiler.  See the `jstransformer` for the
+relevant language.  Examples:
 
  `main.ls`:
+
     ---
     options:
        bare: true
     ---
     f = a >> b
     # LiveScript won't generate top-lever wrapper.
-`page.pug`
+
+`page.pug`:
+
     ---
     options:
         doctype: html
     ---
     p(x-attr)
-    // This shall render to `<p x-attr="x-attr">`
+    // This shall render to `<p x-attr="x-attr">`.
 
 ### ignore: _boolean_
 
