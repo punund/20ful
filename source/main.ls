@@ -139,6 +139,7 @@ processFile = (hsh) ->
          x.done = 1.5
          log 'template'.red, x.infile.blue
       | _
+         log.debug 'SCAN', dst, src, outfile, attr.options
          Compilers.compile dst, src, body, outfile, attr.options
          .then (compiled) ->
             | x.dst is \html and x.attr.layout isnt \none
@@ -188,8 +189,8 @@ rebuild = ->
             |> find pathEq <[attr template]>, layoutName
             |> (or emptyLayout)
 
-         Compilers.compile layout.dst, layout.src, layout.body, x.outfile, {
-            ...x.attr
+         log.debug 'REBUILD', layout.dst, layout.src, x.outfile, attr: x.attr
+         Compilers.compile layout.dst, layout.src, layout.body, x.outfile, x.attr?options, {
             body: x.cpld
             toc: Toc.build _:toc, hsh: x.toc?hsh
             css: css

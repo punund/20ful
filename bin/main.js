@@ -143,6 +143,7 @@
           x.done = 1.5;
           return log('template'.red, x.infile.blue);
         default:
+          log.debug('SCAN', dst, src, outfile, attr.options);
           return Compilers.compile(dst, src, body, outfile, attr.options).then(function(compiled){
             switch (false) {
             case !(x.dst === 'html' && x.attr.layout !== 'none'):
@@ -204,10 +205,18 @@
       })(
       find(pathEq(['attr', 'template'], layoutName))(
       valuesSite));
-      return Compilers.compile(layout.dst, layout.src, layout.body, x.outfile, (ref$ = {}, import$(ref$, x.attr), ref$.body = x.cpld, ref$.toc = Toc.build({
-        _: toc,
-        hsh: (ref1$ = x.toc) != null ? ref1$.hsh : void 8
-      }), ref$.css = css, ref$.js = js, ref$)).then(function(c){
+      log.debug('REBUILD', layout.dst, layout.src, x.outfile, {
+        attr: x.attr
+      });
+      return Compilers.compile(layout.dst, layout.src, layout.body, x.outfile, (ref$ = x.attr) != null ? ref$.options : void 8, {
+        body: x.cpld,
+        toc: Toc.build({
+          _: toc,
+          hsh: (ref1$ = x.toc) != null ? ref1$.hsh : void 8
+        }),
+        css: css,
+        js: js
+      }).then(function(c){
         if (!(x.done > 2)) {
           x.done = 3;
           return writeOne(x, c);
