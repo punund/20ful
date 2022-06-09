@@ -48,7 +48,7 @@ emptyLayout = src: \pug, dst: \html, body: '|!{body}'
 
 site = {}
 # hash of input files
-# "done" means: 1: read, 1.5: not html, 2: template compiled, 4: written
+# "done" means: 1: read, 1.5: is template, 2: template compiled, 4: written
 
 state.fileCount = length glob.sync C.source + '/**/*', {+nodir}
 
@@ -134,22 +134,30 @@ processFile = (hsh) ->
             
       x <<< {outfile, body, dst, attr, link, src}
 
-      Promise.resolve switch
-      | x.attr.template
+      Promise.resolve if x.attr.template
          x.done = 1.5
          log 'template'.red, x.infile.blue
-      | _
-         log.debug 'SCAN', dst, src, outfile, attr.options
+
+         # partials affected by changed template tagged for recompilation
+         affected = site
+            |> toPairs
+            |> filter(pathEq <[1 layout]>, x.attr.template)
+            |> map (y) -> site[y.0].done = 2
+      else
          Compilers.compile dst, src, body, outfile, attr.options
          .then (compiled) ->
             | x.dst is \html and x.attr.layout isnt \none
-               x <<< cpld: compiled, done: 2
+               x <<< {
+                  cpld: compiled
+                  done: 2
+                  layout: x.attr.layout or \system
+                  }
             | _
                writeOne x, compiled
 
       .then ->
          if allIn! and (all ((.done) >> (> 1)), values site)
-            Promise.all rebuild!
+            Promise.all pass2!
             .then ->
                if args._.0 is \build and all (propEq \done, 4), values site
                   process.exit 0
@@ -158,7 +166,7 @@ processFile = (hsh) ->
    .catch theError
 
 #-------------------------------------------------
-rebuild = ->
+pass2 = ->
    valuesSite = values site
 
    toc = valuesSite
@@ -189,7 +197,6 @@ rebuild = ->
             |> find pathEq <[attr template]>, layoutName
             |> (or emptyLayout)
 
-         log.debug 'REBUILD', layout.dst, layout.src, x.outfile, attr: x.attr
          Compilers.compile layout.dst, layout.src, layout.body, x.outfile, x.attr?options, {
             body: x.cpld
             toc: Toc.build _:toc, hsh: x.toc?hsh

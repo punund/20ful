@@ -101,6 +101,8 @@ The rendered file that used this template.
 #### toc
 Table of content, or navigation, within an `<ol>`. Built from `toc` attributes,
 see below.
+#### eleventyNavigation
+Synonym for `toc`.
 
 #### css
 Set of `<link>` attributes referring to CSS files, if cache busting is enabled.
@@ -178,15 +180,22 @@ This controls the order of tags within cache-busted `css` and `js` variables.
 
 ### options: _object_
 
-Options to pass to the compiler, e.g. `main.ls` may look:
+Options to pass to the compiler, examples:
 
+ `main.ls`:
     ---
     options:
        bare: true
     ---
     f = a >> b
-
-and LiveScript won't generate top-lever wrapper.
+    # LiveScript won't generate top-lever wrapper.
+`page.pug`
+    ---
+    options:
+        doctype: html
+    ---
+    p(x-attr)
+    // This shall render to `<p x-attr="x-attr">`
 
 ### ignore: _boolean_
 
