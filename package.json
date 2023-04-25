@@ -68,7 +68,7 @@
       "sass": "^1.52.2",
       "snyk": "^1.479.0",
       "string-hash": "^1.1.3",
-      "yaml": "^2.1.1"
+      "yaml": "^2.2.2"
    },
    "resolutiuons": {
       "minimist": "^1.2.5",
