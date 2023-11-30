@@ -50,7 +50,7 @@
       "base58": "^2.0.1",
       "browser-sync": "^2.26.14",
       "front-matter": "^4.0.2",
-      "glob": "^8.0.3",
+      "glob": "^9.0.0",
       "isbinaryfile": "^5.0.0",
       "jstransformer": "^1.0.0",
       "jstransformer-livescript": "^1.2.0",
